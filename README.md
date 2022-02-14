@@ -35,9 +35,26 @@
 
 ### 3. 팀 소개
 
-팀을 소개하세요.
-
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
+* 장민혁
+  * Role : 
+  * Student ID :
+  * E-Mail :
+  * Github : 
+* 조상연
+  * Role :
+  * Student ID :
+  * E-Mail :
+  * Github :
+* 허진우
+  * Role :
+  * Student ID :
+  * E-Mail : 
+  * Github :
+* 황교민
+  * Role :
+  * Student ID : 20171724
+  * E-Mail : piter0208@kookmin.ac.kr
+  * Github : https://github.com/KyominHwang
 
 ### 4. 사용법
 
