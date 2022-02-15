@@ -46,10 +46,10 @@
   * E-Mail :
   * Github :
 * 허진우
-  * Role :
-  * Student ID :
-  * E-Mail : 
-  * Github :
+  * Role : Frontend and Backend
+  * Student ID : 20171721
+  * E-Mail : fffuro@kookmin.ac.kr
+  * Github : https://github.com/hideonhouse
 * 황교민
   * Role :
   * Student ID : 20171724
