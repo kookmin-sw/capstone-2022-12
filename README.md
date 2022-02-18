@@ -42,9 +42,9 @@
   * Github : 
 * 조상연
   * Role :
-  * Student ID :
-  * E-Mail :
-  * Github :
+  * Student ID : 20171706
+  * E-Mail : whtkddus98@kookmin.ac.kr
+  * Github : https://github.com/JoSangYeon
 * 허진우
   * Role : Frontend and Backend
   * Student ID : 20171721
