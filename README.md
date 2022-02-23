@@ -37,9 +37,9 @@
 
 * 장민혁
   * Role : 
-  * Student ID :
-  * E-Mail :
-  * Github : 
+  * Student ID : 20171691
+  * E-Mail : wkdalsgur85@kookmin.ac.kr
+  * Github : https://github.com/min-hyuk98
 * 조상연
   * Role :
   * Student ID : 20171706
