@@ -1,0 +1,23 @@
+{
+  "name": "capstone-web-server",
+  "version": "1.0.0",
+  "description": "최근 IoT기술이 돌봄 서비스에서도 활용되고 있다. 대표적인 예로 KT의 IoT 기반 위치 트래커, 안심 LED 솔루션, 그리고 TV 시청 형태를 통한 모니터링 시스템이 있다. 하지만, 이는 모두 독거 노인의 정신적 건강을 모니터링하는 서비스가 아닌 독거 노인의 위치 파악을 통한 신체적 건강 모니터링을 주로 집중하고 있다. 즉, IoT기술의 활용을 통해서 많은 독거 노인이 혜택을 누릴 수 있게 되었지만, 감정 및 정신적 건강 모니터링에 집중하지 않아 정작 가장 중요한 조기발견은 어렵다는 한계점을 가진다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kookmin-sw/capstone-2022-12.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kookmin-sw/capstone-2022-12/issues"
+  },
+  "homepage": "https://github.com/kookmin-sw/capstone-2022-12#readme",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3"
+  }
+}
