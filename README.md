@@ -15,22 +15,22 @@
 ### 3. 팀 소개
 
 * 장민혁
-  * Role : 
+  * Role : Backend and Device(Raspi)
   * Student ID : 1691
   * E-Mail : wkdalsgur85@kookmin.ac.kr
   * Github : https://github.com/min-hyuk98
 * 조상연
-  * Role :
+  * Role : Model Training and Backend
   * Student ID : 1706
   * E-Mail : whtkddus98@kookmin.ac.kr
   * Github : https://github.com/JoSangYeon
 * 허진우
-  * Role : Frontend and Backend
+  * Role : Frontend and Model API
   * Student ID : 1721
   * E-Mail : fffuro@kookmin.ac.kr
   * Github : https://github.com/hideonhouse
 * 황교민
-  * Role :
+  * Role : Device(Raspi) and Model Training
   * Student ID : 1724
   * E-Mail : piter0208@kookmin.ac.kr
   * Github : https://github.com/KyominHwang
