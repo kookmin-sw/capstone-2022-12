@@ -7,6 +7,7 @@ const session = require('express-session');
 const crypto = require('crypto');
 const FileStore = require('session-file-store')(session); 
 const cookieParser = require('cookie-parser');
+const sendMailRouter = require('./routes/sendmail');
 
 // express 설정 1
 const app = express();
@@ -37,6 +38,7 @@ app.use(session({
     saveUninitialized: true, // 세션이 필요하면 세션을 실행시칸다(서버에 부담을 줄이기 위해)
     store: new FileStore() // 세션이 데이터를 저장하는 곳
 }));
+app.use('/', sendMailRouter);
 
 
 
