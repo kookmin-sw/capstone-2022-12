@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "MinHyuk",
+  "author": "JSY",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -22,5 +22,13 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kookmin-sw/capstone-2022-12.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kookmin-sw/capstone-2022-12/issues"
+  },
+  "homepage": "https://github.com/kookmin-sw/capstone-2022-12#readme"
 }

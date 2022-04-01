@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/354885cafc.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/login.css">
+    <style>
+        table {
+          border: 1px solid #444444;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #444444;
+        }
+      </style>
+</head>
+
+<body>
+    <nav>
+        <div class="container">
+            <div class="title">
+                <i class="fab fa-pied-piper-square"></i>
+                <a href="/">AID</a>
+            </div>
+            <h3><%= name %>님 통계자료 </h4>
+            <div class="menu_bar">
+                <ul>
+                    <li><a href="/">Main 화면으로</a></li>
+                    <li> 최근 2주간 감정 상태 </li>
+                        <table bordercolor="black">
+                            <thead>
+                                <tr>
+                                    <th>감정</th>
+                                    <th>횟수</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for(var key in info_data) { %>
+                                <tr>
+                                    <td><%= key %></td>
+                                    <td><%= info_data[key] %></td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    <li> 최근 대화 내역 </li>
+                        <%= user_sentence %><br>
+                        시간 : <%= user_time %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</body>
+
+</html>

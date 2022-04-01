@@ -32,6 +32,10 @@
             <form method="post">
                 <ul>
                     <li>
+                        <label>제품 시리얼 번호</label>
+                        <input type="number" name='serial' required>
+                    </li>
+                    <li>
                         <label>아이디</label>
                         <input type="text" name='id' required>
                     </li>
@@ -46,6 +50,59 @@
                     <li>
                         <label>나이</label>
                         <input type="number" name="age" required>
+                    </li>
+                    <li>
+                        <label>주소</label>
+                        <input type="text" name="address" required>
+                    </li>
+                    <hr width="100%" color="black" size="3">
+                    <li>
+                        <label>보호자 1 이름</label>
+                        <input type="text" name="rela1_name" required>
+                    </li>
+                    <li>
+                        <label>보호자 1 관계</label>
+                        <select name="rela1" required>
+                            <option value="-1">=== 선택 ===</option>
+                            <option value=0>가족</option>
+                            <option value=1>기관</option>
+                        </select>
+                    </li>
+                    <li>
+                        <label>보호자 1 연락처</label>
+                        <input type="number" name="rela1_number" required>
+                    </li>
+                    <li>
+                        <label>보호자 2 이름</label>
+                        <input type="text" name="rela2_name">
+                    </li>
+                    <li>
+                        <label>보호자 2 관계</label>
+                        <select name="rela2">
+                            <option value="-1">=== 선택 ===</option>
+                            <option value=0>가족</option>
+                            <option value=1>기관</option>
+                        </select>
+                    </li>
+                    <li>
+                        <label>보호자 2 연락처</label>
+                        <input type="number" name="rela2_number">
+                    </li>
+                    <li>
+                        <label>보호자 3 이름</label>
+                        <input type="text" name="rela3_name">
+                    </li>
+                    <li>
+                        <label>보호자 3 관계</label>
+                        <select name="rela3">
+                            <option value="-1">=== 선택 ===</option>
+                            <option value=0>가족</option>
+                            <option value=1>기관</option>
+                        </select>
+                    </li>
+                    <li>
+                        <label>보호자 3 연락처</label>
+                        <input type="number" name="rela3_number">
                     </li>
                 </ul>
                 <input type="submit" value="회원가입">
