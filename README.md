@@ -10,7 +10,7 @@
 
 ### 2. 소개 영상
 
-프로젝트 소개하는 영상을 추가하세요
+[![AID 소개영상]("https://user-images.githubusercontent.com/28241676/161468627-369e9636-9bcf-41b8-ba68-581edceda61d.png")]("https://youtu.be/0mgMB8SmN80")
 
 ### 3. 팀 소개
 
