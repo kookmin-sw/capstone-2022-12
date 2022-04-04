@@ -18,9 +18,9 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 [![AID 소개영상](https://user-images.githubusercontent.com/28241676/161468627-369e9636-9bcf-41b8-ba68-581edceda61d.png)](https://youtu.be/0mgMB8SmN80)
 
 + 중간 보고서
- + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)
+  + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)
 + 시연 영상
- + 추가 예정
+  + 추가 예정
 
 ### 3. 팀 소개
 
