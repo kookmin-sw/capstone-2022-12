@@ -22,8 +22,8 @@ USE `AID_DB` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `AID_DB`.`USER` (
   `Serial_Number` VARCHAR(12) NOT NULL,
-  `ID` INT NOT NULL,
-  `PW` INT NOT NULL,
+  `ID` VARCHAR(24) NOT NULL,
+  `PW` VARCHAR(24) NOT NULL,
   `Name` VARCHAR(10) NOT NULL,
   `Age` TINYINT(1) NOT NULL,
   `Address` VARCHAR(90) NOT NULL,
@@ -37,8 +37,8 @@ ENGINE = InnoDB;
 -- Table `AID_DB`.`Manager`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `AID_DB`.`MANAGER` (
-  `ID` INT NOT NULL,
-  `PW` INT NOT NULL,
+  `ID` VARCHAR(24) NOT NULL,
+  `PW` VARCHAR(24) NOT NULL,
   `USER_Serial_Number` VARCHAR(12) NOT NULL,
   `Name` VARCHAR(10) NOT NULL,
   `Relationship` ENUM("Family", "Agency") NOT NULL,
@@ -62,11 +62,18 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 -- Insert default data
 -- -----------------------------------------------------
+-- w40FGR81kYGlvhdxKR5m3w== -> user1_id
+-- avZJNl8NWKBMWEey4W38Cg== -> user1_pw
 INSERT INTO USER 
-VALUES ('AAA000000001', 12345, 54321, '김할머니', 70, '대한민국 어딘가', '010-1234-5678', './Log/AAA000000001.json');
+VALUES ('AAA000000001', 'w40FGR81kYGlvhdxKR5m3w==', 'avZJNl8NWKBMWEey4W38Cg==', '김할머니', 70, '대한민국 어딘가', '010-1234-5678', './Log/AAA000000001.json');
 
-INSERT INTO MANAGER 
-VALUES (369, 963, 'AAA000000001', '가족', 'Family', 'whtkddus98@kookmin.ac.kr', '010-4321-5678');
 
+-- gsurIXUZdIuFJcxFpGKNFQ== -> manager1_id
+-- fqyarXKn1/hjRkAgVNCXCw== -> manager1_pw
 INSERT INTO MANAGER 
-VALUES (123, 321, 'AAA000000001', '기관', 'Agency', '12345@ABCDEFG.com', '010-9876-5432');
+VALUES ('gsurIXUZdIuFJcxFpGKNFQ==', 'fqyarXKn1/hjRkAgVNCXCw==', 'AAA000000001', '가족', 'Family', 'whtkddus98@kookmin.ac.kr', '010-4321-5678');
+
+-- txJRKXyIVfyhtVzNBdyCug== -> manager2_id
+-- hXdCGi0t0MTYJrnpSdvHBg== -> manager2_pw
+INSERT INTO MANAGER 
+VALUES ('txJRKXyIVfyhtVzNBdyCug==', 'hXdCGi0t0MTYJrnpSdvHBg==', 'AAA000000001', '기관', 'Agency', '12345@ABCDEFG.com', '010-9876-5432');

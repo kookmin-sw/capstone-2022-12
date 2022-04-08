@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
 const crypto = require('crypto');
+const encrypt = require('./hashing.js').encrypt;
+const decrypt = require('./hashing.js').decrypt;
 const FileStore = require('session-file-store')(session); 
 const cookieParser = require('cookie-parser');
 
@@ -124,6 +126,11 @@ app.post('/login', (req, res) => {
     const body = req.body;
     const id = body.id;
     const pw = body.pw;
+    const chk = body.check;
+
+    console.log(id);
+    console.log(pw);
+    console.log(chk);
 
     client.query('select USER_ID, Password, Name, Age, Address from user where USER_ID=?', [id], (err, data) => {
         // 로그인 확인
