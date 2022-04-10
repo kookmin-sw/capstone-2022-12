@@ -6,10 +6,24 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
 const crypto = require('crypto');
-const encrypt = require('./hashing.js').encrypt;
-const decrypt = require('./hashing.js').decrypt;
+const encrypt = require('./functions/hashing.js').encrypt;
+const decrypt = require('./functions/hashing.js').decrypt;
+const getYYMMDD = require('./functions/getTime.js').getYYMMDD;
+const getHHMMSS = require('./functions/getTime.js').getHHMMSS;
+const get2weeks = require('./functions/getTime.js').get2weeks;
 const FileStore = require('session-file-store')(session); 
 const cookieParser = require('cookie-parser');
+
+function getSortedDate(date)
+{
+    keys = [];
+    for(key in date)
+    {
+        keys.push(key);
+    }
+    keys.sort().reverse();
+    return keys;
+}
 
 // express 설정 1
 const app = express();
@@ -82,37 +96,106 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
     console.log('회원가입 하는중')
     const body = req.body;
-    const serial = body.serial;
-    const id = body.id;
-    const pw = body.pw;
-    const name = body.name;
-    const age = body.age;
-    const address = body.address;
 
-    const rela1_name = body.rela1_name;
-    const rela1 = body.rela1;
-    const rela1_num = body.rela1_number;
-    const rela2_name = body.rela2_name;
-    const rela2 = body.rela2;
-    const rela2_num = body.rela2_number;
-    const rela3_name = body.rela3_name;
-    const rela3 = body.rela3;
-    const rela3_num = body.rela3_number;
+    if (body.check == "user")
+    {
+        const serial = body.serial;
+        let u_id = body.u_id;
+        let u_pw = body.u_pw;
+        const u_name = body.u_name;
+        const u_age = body.u_age;
+        const u_address = body.u_address;
+        const u_number = body.u_number
 
-    client.query('select * from user where USER_ID=?', [id], (err, data) => {
-        console.log(data);
-        if (data.length == 0) {
-            console.log('회원가입 성공');
-            client.query('insert into user(Serial_Number, USER_ID, Password, Name, Age, Address, Relationship_1_Name, Relationship_1, Relationship_1_Number, Relationship_2_Name, Relationship_2, Relationship_2_Number, Relationship_3_Name, Relationship_3, Relationship_3_Number) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
-                serial, id, pw, name, age, address, rela1_name, rela1, rela1_num, rela2_name, rela2, rela2_num, rela3_name, rela3, rela3_num
-            ]);
-            res.redirect('/');
-        } else {
-            console.log('회원가입 실패');
-            res.send('<script>alert("회원가입 실패\n중복된 ID입니다.");</script>');
-            res.redirect('/login');
-        }
-    });
+        u_id = encrypt(u_id);
+        u_pw = encrypt(u_pw);
+        
+        client.query('select Serial_Number from user where Serial_Number=?', [serial], (err, data) => {
+            if (data.length != 0)
+            {
+                console.log('중복된 시리얼 번호');
+                // res.send('<script>alert("회원가입 실패\n중복된 제품번호입니다.");</script>');
+                res.redirect('/login');
+            }
+            else
+            {
+                client.query('select * from user where ID=?', [u_id], (err, data) => {
+                    if (data.length == 0) {
+                        console.log('회원가입 성공');
+        
+                        // Json파일 생성
+                        const file_path = './Log/'+serial+'.json'
+                        let user_json = {[getYYMMDD()] : []};
+                        user_json = JSON.stringify(user_json);
+                        fs.writeFileSync(file_path, user_json)
+        
+                        // DB 삽입
+                        client.query('insert into user(Serial_Number, ID, PW, Name, Age, Address, Number, Log_Path) values(?,?,?,?,?,?,?,?)', [
+                            serial, u_id, u_pw, u_name, u_age, u_address, u_number, file_path
+                        ]);
+        
+                        res.redirect('/');
+                    } else {
+                        console.log('중복된 ID');
+                        // res.send('<script>alert("회원가입 실패\n중복된 ID입니다.");</script>');
+                        res.redirect('/login');
+                    }
+                });
+            }
+        });
+    }
+    else
+    {
+        const serial = body.m_u_serial;
+        let m_u_id = body.m_u_id;
+        let m_u_pw = body.m_u_pw;
+
+        m_u_id = encrypt(m_u_id);
+        m_u_pw = encrypt(m_u_pw);
+
+        client.query('select Serial_Number, ID, PW from user where Serial_Number=?', [serial], (err, data) => {
+            if (data.length == 0) {
+                console.log('등록되지 않은 사용자');
+                // res.send('<script>alert("회원가입 실패\n등록되지 않은 사용자 입니다.");</script>');
+                res.redirect('/');
+            } else {
+                if (m_u_id == data[0].ID && m_u_pw == data[0].PW && serial == data[0].Serial_Number)
+                {
+                    console.log('사용자 정보 확인 완료');
+                    let m_id = body.m_id;
+                    let m_pw = body.m_pw;
+                    const m_name = body.m_name;
+                    const m_relation = body.relation;
+                    const m_email = body.m_email;
+                    const m_number = body.m_number;
+
+                    m_id = encrypt(m_id);
+                    m_pw = encrypt(m_pw);
+                    client.query('select * from manager where ID=?', [m_id], (err, data) => {
+                        if (data.length == 0)
+                        {
+                            console.log('회원가입 성공');
+                            client.query('insert into manager(ID, PW, USER_Serial_Number, Name, Relationship, Email, Number) values(?,?,?,?,?,?,?)', [
+                                m_id, m_pw, serial, m_name, m_relation, m_email, m_number
+                            ]);
+                        }
+                        else
+                        {
+                            console.log('중복된 ID');
+                            // res.send('<script>alert("회원가입 실패\n중복된 ID입니다.");</script>');
+                            res.redirect('/login');
+                        }
+                    });
+                }
+                else
+                {
+                    console.log('잘못된 사용자 정보');
+                    // res.send('<script>alert("회원가입 실패\n잘못된 사용자 정보입니다.");</script>');
+                    res.redirect('/');
+                }
+            }
+        });
+    }
 });
 
 
@@ -124,49 +207,67 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
     const body = req.body;
-    const id = body.id;
-    const pw = body.pw;
+    let id = body.id;
+    let pw = body.pw;
     const chk = body.check;
 
-    console.log(id);
-    console.log(pw);
-    console.log(chk);
-
-    client.query('select USER_ID, Password, Name, Age, Address from user where USER_ID=?', [id], (err, data) => {
-        // 로그인 확인
-        // console.log(data[0]);
-        // console.log(id);
-        // console.log(data[0].USER_ID);
-        // console.log(data[0].Password);
-        // console.log(id == data[0].USER_ID);
-        // console.log(pw == data[0].Password);
-        if (data.length == 0)
-        {
-            console.log('등록된 정보가 없습니다.');
-            res.render('login', {});
-        }
-        else if (id == data[0].USER_ID && pw == data[0].Password) {
-            console.log('로그인 성공');
-            // 세션에 추가
-            req.session.is_logined = true;
-            req.session.name = data[0].Name;
-            req.session.user_id = data[0].USER_ID;
-            req.session.user_pw = data[0].Password;
-            req.session.save(function () { // 세션 스토어에 적용하는 작업
-                res.render('index', { // 정보전달
-                    id: data[0].USER_ID,
-                    name: data[0].Name,
-                    age: data[0].Aage,
-                    address : data[0].Address,
-                    is_logined: true
+    id = encrypt(id);
+    pw = encrypt(pw);
+    
+    if (chk == 'user')
+    {
+        client.query('select Serial_Number, ID, PW, Name from user where ID=?', [id], (err, data) => {
+            if (data.length == 0)
+            {
+                console.log('등록된 정보가 없습니다.');
+                res.render('login', {});
+            }
+            else if (id == data[0].ID && pw == data[0].PW) {
+                console.log('로그인 성공');
+                // 세션에 추가
+                req.session.is_logined = true;
+                req.session.serial_number = data[0].Serial_Number;
+                req.session.check = chk;
+                req.session.name = data[0].Name;
+                req.session.save(function () { // 세션 스토어에 적용하는 작업
+                    res.render('index', { // 정보전달
+                        name: data[0].Name,
+                        is_logined: true
+                    });
                 });
-            });
-        } else {
-            console.log('로그인 실패\nID 또는 PW를 확인해주세요');
-            res.render('login', {});
-        }
-    });
-
+            } else {
+                console.log('로그인 실패\nID 또는 PW를 확인해주세요');
+                res.render('login', {});
+            }
+        });
+    }
+    else 
+    {
+        client.query('select USER_Serial_Number, ID, PW, Name, Email, Number from manager where ID=?', [id], (err, data) => {
+            if (data.length == 0)
+            {
+                console.log('등록된 정보가 없습니다.');
+                res.render('login', {});
+            }
+            else if (id == data[0].ID && pw == data[0].PW) {
+                console.log('로그인 성공');
+                // 세션에 추가
+                req.session.is_logined = true;
+                req.session.serial_number = data[0].USER_Serial_Number;
+                req.session.check = chk;
+                req.session.name = data[0].Name;
+                req.session.save(function () { // 세션 스토어에 적용하는 작업
+                    res.render('index', { // 정보전달
+                        name: data[0].Name,
+                        is_logined: true
+                    });
+                });
+            } else {
+                console.log('로그인 실패\nID 또는 PW를 확인해주세요');
+                res.render('login', {});
+            }
+        });
+    }
 });
 
 
@@ -184,33 +285,39 @@ app.get('/logout', (req, res) => {
 app.get('/info', (req, res) => {
     console.log('통계자료 확인하기');
     console.log(req.session);
+    const path = "./Log/"+req.session.serial_number+".json";
 
-    client.query('select * from log where USER_USER_ID=?', [req.session.user_id], (err, data) => {
-        let user_data = {"Happiness":0, "Sadness":0, "Anger":0, "Anxiety":0};
-        let last_time_stemp;
-        let last_sentence;
+    const HHMMSS = 0;
+    const EMOTION = 1;
+    const TEXT = 2;
+    
+    const user_data = JSON.parse(fs.readFileSync(path).toString());
+    const weeks = get2weeks();
+    let user_emotion = {"Happiness":0, "Sadness":0, "Anger":0, "Anxiety":0};
 
-        for (var i=0; i<data.length; i++)
+    for(var d=0; d<weeks.length; d++)
+    {   
+        day = weeks[d];
+        if (user_data[day] == undefined) {continue;}
+        for (var i=0; i<user_data[day].length; i++)
         {   
-            user_data[data[i]['Emotion']] += 1;
+            user_emotion[user_data[day][i][EMOTION]] += 1
         }
-        // 로그인된 사람의 최근 2주간 데이터를 추출해서 
-        // 각 감정 상태에 대한 통계(일단 2주간 각 감정 횟수 정도?)
-        // 를 출력하도록 해야할 듯!
+    }
 
-        last_time_stemp = data[i-1]['Time_stemp'];
-        last_sentence = data[i-1]['Text_path'];
+    keys = getSortedDate(user_data);
 
-        console.log(user_data);
-        console.log(last_sentence);
-        console.log(last_time_stemp);
+    let last = user_data[keys[0]].at(-1);
+    const last_time = keys[0]+" "+last[HHMMSS];
+    const last_emotion = last[EMOTION];
+    const last_text = last[TEXT];
 
-        res.render('info', {
-            name: req.session.name,
-            info_data: user_data,
-            user_time: last_time_stemp,
-            user_sentence: last_sentence
-        });
+    res.render('info', {
+        name: req.session.name,
+        info_data: user_emotion,
+        user_time: last_time,
+        user_emotion: last_emotion,
+        user_text: last_text
     });
 });
 
