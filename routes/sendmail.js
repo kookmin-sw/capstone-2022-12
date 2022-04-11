@@ -12,7 +12,7 @@ router.post("/sendmail", function (req, res, next) {
         secure: false,
         auth: {
             user: 'wkdalsgur9812@gmail.com',  // gmail 계정 아이디를 입력
-            pass: ''          // gmail 계정의 비밀번호를 입력
+            pass: 'cnj140535!'          // gmail 계정의 비밀번호를 입력
         }
     });
 
