@@ -11,16 +11,20 @@ router.post("/sendmail", function (req, res, next) {
         port: 587,
         secure: false,
         auth: {
-            user: 'wkdalsgur9812@gmail.com',  // gmail 계정 아이디를 입력
-            pass: 'cnj140535!'          // gmail 계정의 비밀번호를 입력
+            user: 'kookminaid17@gmail.com',  // gmail 계정 아이디를 입력
+            pass: 'kookminAID17!'          // gmail 계정의 비밀번호를 입력
         }
     });
 
     let mailOptions = {
-        from: 'wkdalsgur9812@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+        from: 'kookminaid17@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
         to: email,                     // 수신 메일 주소
-        subject: 'Sending Email using Node.js',   // 제목
-        text: 'That was easy!'  // 내용
+        subject: 'AID 우울증 판단 결과',   // 제목
+        html: `<h1>2주간의 우울증 판단 결과 우울증 위험도가 높습니다</h1>
+          <div>
+            아래 버튼을 눌러 보호자 인증을 완료해주세요.
+          </div>`,
+        text: "2주간의 우울증 판단 결과 우울증 위험도가 높습니다", // 내용
     };
 
     transporter.sendMail(mailOptions, function (error, info) {

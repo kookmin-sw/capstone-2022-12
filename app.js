@@ -13,6 +13,8 @@ const getHHMMSS = require('./functions/getTime.js').getHHMMSS;
 const get2weeks = require('./functions/getTime.js').get2weeks;
 const FileStore = require('session-file-store')(session); 
 const cookieParser = require('cookie-parser');
+const schedule = require('node-schedule');
+const sendMailRouter = require('./routes/sendmail');
 
 function getSortedDate(date)
 {
@@ -28,6 +30,7 @@ function getSortedDate(date)
 // express 설정 1
 const app = express();
 
+
 // db 생성
 // dbsetting.dbinit();
 
@@ -36,7 +39,7 @@ const client = mysql.createConnection({
     host: 'localhost',
     port: '3306',
     user: 'root',
-    password: '98sy1219pp!',
+    password: 'cnj140535',
     database: 'aid_db'
 });
 
@@ -68,6 +71,8 @@ app.use(session({
     store: new FileStore() // 세션이 데이터를 저장하는 곳
 }));
 
+// 메일 보내기 모듈
+app.use('/', sendMailRouter);
 
 
 // 메인페이지
