@@ -15,6 +15,12 @@ const FileStore = require('session-file-store')(session);
 const cookieParser = require('cookie-parser');
 const schedule = require('node-schedule');
 const sendMailRouter = require('./routes/sendmail');
+const sendMailRouterManager = require('./routes/sendmail_manager');
+const res = require('express/lib/response');
+const request = require('request');
+const axios = require('axios');
+const nodemailer = require('nodemailer');
+const ejs = require('ejs');
 
 function getSortedDate(date)
 {
@@ -73,6 +79,7 @@ app.use(session({
 
 // 메일 보내기 모듈
 app.use('/', sendMailRouter);
+app.use('/', sendMailRouterManager);
 
 
 // 메인페이지
@@ -82,7 +89,8 @@ app.get('/', (req, res) => {
     if (req.session.is_logined == true) {
         res.render('index', {
             is_logined: req.session.is_logined,
-            name: req.session.name
+            name: req.session.name,
+            check: req.session.check
         });
     } else {
         res.render('index', {
@@ -237,7 +245,8 @@ app.post('/login', (req, res) => {
                 req.session.save(function () { // 세션 스토어에 적용하는 작업
                     res.render('index', { // 정보전달
                         name: data[0].Name,
-                        is_logined: true
+                        is_logined: true,
+                        check: req.session.check
                     });
                 });
             } else {
@@ -259,17 +268,18 @@ app.post('/login', (req, res) => {
                 // 세션에 추가
                 req.session.is_logined = true;
                 req.session.serial_number = data[0].USER_Serial_Number;
-                req.session.check = chk;
+                req.session.check = 'manager';
                 req.session.name = data[0].Name;
                 req.session.save(function () { // 세션 스토어에 적용하는 작업
                     res.render('index', { // 정보전달
                         name: data[0].Name,
-                        is_logined: true
+                        is_logined: true,
+                        check: req.session.check
                     });
                 });
             } else {
-                console.log('로그인 실패\nID 또는 PW를 확인해주세요');
-                res.render('login', {});
+                // console.log('로그인 실패\nID 또는 PW를 확인해주세요');
+                // res.render('login', {});
             }
         });
     }
@@ -288,48 +298,164 @@ app.get('/logout', (req, res) => {
 
 // 통계자료 보기
 app.get('/info', (req, res) => {
-    console.log('통계자료 확인하기');
-    console.log(req.session);
-    const path = "./Log/"+req.session.serial_number+".json";
+    try{
+        console.log('통계자료 확인하기');
+        console.log(req.session);
+        const path = "./Log/"+req.session.serial_number+".json";
 
-    const HHMMSS = 0;
-    const EMOTION = 1;
-    const TEXT = 2;
-    
-    const user_data = JSON.parse(fs.readFileSync(path).toString());
-    const weeks = get2weeks();
-    let user_emotion = {"Happiness":0, "Sadness":0, "Anger":0, "Anxiety":0};
+        const HHMMSS = 0;
+        const EMOTION = 1;
+        const TEXT = 2;
+        
+        const user_data = JSON.parse(fs.readFileSync(path).toString());
+        const weeks = get2weeks();
+        let user_emotion = {"depressed":0, "not_depressed":0};
 
-    for(var d=0; d<weeks.length; d++)
-    {   
-        day = weeks[d];
-        if (user_data[day] == undefined) {continue;}
-        for (var i=0; i<user_data[day].length; i++)
+        for(var d=0; d<weeks.length; d++)
         {   
-            user_emotion[user_data[day][i][EMOTION]] += 1
+            day = weeks[d];
+            if (user_data[day] == undefined) {continue;}
+            for (var i=0; i<user_data[day].length; i++)
+            {   
+                user_emotion[user_data[day][i][EMOTION]] += 1
+            }
         }
+
+        keys = getSortedDate(user_data);
+
+        let last = user_data[keys[0]].at(-1);
+        const last_time = keys[0]+" "+last[HHMMSS];
+        const last_emotion = last[EMOTION];
+        const last_text = last[TEXT];
+
+        res.render('info', {
+            is_logined: req.session.is_logined,
+            check: req.session.check,
+            name: req.session.name,
+            info_data: user_emotion,
+            user_time: last_time,
+            user_emotion: last_emotion,
+            user_text: last_text
+        });
     }
+    catch (err) {
+        console.log('error occured in data statistics page');
+        res.write("<script>alert('there is no data')</script>");
+        res.write("<script>window.location=\"/\"</script>");
+        // res.redirect('/');
 
-    keys = getSortedDate(user_data);
-
-    let last = user_data[keys[0]].at(-1);
-    const last_time = keys[0]+" "+last[HHMMSS];
-    const last_emotion = last[EMOTION];
-    const last_text = last[TEXT];
-
-    res.render('info', {
-        name: req.session.name,
-        info_data: user_emotion,
-        user_time: last_time,
-        user_emotion: last_emotion,
-        user_text: last_text
-    });
+    }
 });
 
 app.post('/info', (req, res) => {
 
 });
 
-app.listen(3000, () => {
+// app.listen(3000, () => {
+//     console.log('3000 port running...');
+// });
+
+app.listen(3000, function(){
     console.log('3000 port running...');
+    // 매주 일요일마다 메일 대상자에게 메일전송
+    schedule.scheduleJob('* * * * * 0', function () {
+        console.log('매주 일요일에 실행.. 메일 보내기');
+        // Log 폴더 순회하며 각 파일(=user)마다 통계정보 검사해서 depress가 50%이상이면 메일보냄
+        // sendmail_auto 파일 새로 만들기
+
+        let dir = 'Log';
+        let files = fs.readdirSync(dir); // 디렉토리를 읽어온다
+        console.log(files);
+
+        try {
+            for (var idx = 0; idx < files.length; idx++) {
+                const path = "./Log/" + files[idx];
+
+                const HHMMSS = 0;
+                const EMOTION = 1;
+                const TEXT = 2;
+                const user_data = JSON.parse(fs.readFileSync(path).toString());
+                const weeks = get2weeks();
+                let user_emotion = { "depressed": 0, "not_depressed": 0 };
+                let user_text = [];
+                let cnt = 0;
+                for (var d = 0; d < weeks.length; d++) {
+                    day = weeks[d];
+                    if (user_data[day] == undefined) { continue; }
+                    for (var i = 0; i < user_data[day].length; i++) {
+                        user_emotion[user_data[day][i][EMOTION]] += 1;
+                        if (cnt < 10) {
+                            user_text.push(user_data[day][i][TEXT]);
+                            cnt += 1;
+                        }
+                    }
+                }
+                console.log(user_text);
+                if (user_emotion['depressed'] > user_emotion['not_depressed']) { //depressed가 not depressed보다 많을 때
+                    // console.log('우울증 위험합니다')
+                    let dep = parseInt((user_emotion['depressed'] / (user_emotion['depressed'] + user_emotion['not_depressed'])) * 100) // dep 비율
+                    let serial = files[idx].split('.')[0]
+                    let status;
+                    if (dep > 75) {
+                        status = "매우 위험";
+                    }
+                    else {
+                        status = "위험";
+                    }
+                    
+                    let transporter = nodemailer.createTransport({
+                        service: 'gmail',
+                        host: 'smtp.gmail.com',
+                        port: 587,
+                        secure: false,
+                        auth: {
+                            user: 'kookminaid17@gmail.com',  // gmail 계정 아이디를 입력
+                            pass: 'ekfbrnqmxkhzqjnd'          // gmail 계정의 비밀번호를 입력
+                        }
+                    });
+                    client.query('select Email from manager where USER_Serial_Number=?', [serial], (err, data) => {
+                        let email = JSON.parse(JSON.stringify(data[0]))['Email'];
+
+                        client.query('select Name from user where Serial_Number=?', [serial], (err, name) => {
+                            let user_name = JSON.parse(JSON.stringify(name[0]))['Name'];
+                            // console.log(user_name);
+                            let html_content;
+                            ejs.renderFile('./views/email.ejs', { user_name: user_name, dep:dep, status:status, user_text:user_text, }, function (err, data) {
+                                if (err) { console.log(err) }
+                                html_content = data;
+                            });
+
+                            let mailOptions = {
+                                from: 'kookminaid17@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+                                to: email,                     // 수신 메일 주소
+                                subject: 'AID 우울증 판단 결과',   // 제목
+                                html: html_content,
+                                // text: "2주간의 우울증 판단 결과 우울증 위험도가 높습니다", // 내용
+                            };
+
+                            transporter.sendMail(mailOptions, function (error, info) {
+                                if (error) {
+                                    console.log(error);
+                                }
+                                else {
+                                    console.log('Email sent: ' + info.response);
+                                }
+                            });
+                        });
+                    });
+                }
+
+            }
+        }
+        catch (err) {
+            console.log('error occured in auto sending message');
+            console.log(err);
+        }
+    });
+});
+
+// app 어딘가에서 에러났을 때 여기서 처리
+app.use(function (err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send("error occured please go back");
 });

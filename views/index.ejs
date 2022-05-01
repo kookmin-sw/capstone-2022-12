@@ -20,23 +20,36 @@
             </div>
             <div class="menu_bar">
                 <ul>
-                    <!-- <li><a href="/sendmail">sendmail</a></li> -->
                     <% if(is_logined==false){ %>
                         <li><a href="/login">login</a></li>
                         <li><a href="/register">register</a></li>
-                        <% }else{ %>
-                            <li>
-                                <%= name %>님 환영합니다!
-                            </li>
-                            <li><a href="/logout">logout</a></li>
-                            <li><a href="/info">데이터 통계보기</a></li>
-                            <% } %>
+                    <% }else if (check == 'user') { %>
+                        <li>
+                            <%= name %>님 환영합니다!
+                        </li>
+                        <li><a href="/logout">logout</a></li>
+                        <li><a href="/info">데이터 통계보기</a></li>
+                        <li>
+                            통계자료를 받을 메일주소를 입력하세요
+                            <form action="/sendmail" method="post">
+                                <input type="text" name="email">
+                                <button>통계 정보 메일로 받기</button>
+                            </form>
+                        </li>
+                    <% } else if (check == 'manager') { %>
+                        <li>
+                            <%= name %>님 환영합니다!
+                        </li>
+                        <li><a href="/logout">logout</a></li>
+                        <li><a href="/info">데이터 통계보기</a></li>
+                        <li>
+                            <form action="/sendmail_manager" method="post">
+                                <button>통계 정보 메일로 받기</button>
+                            </form>
+                        </li>
+                    <% } %>
                 </ul>
-            </div>
-                <form action="/sendmail" method="post">
-                    <input type="text" name="email">
-                </form>
-            <div>
+
 
             </div>
         </div>
