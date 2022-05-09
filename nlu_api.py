@@ -2,42 +2,13 @@ import logging
 import os
 
 import torch
-import torch.nn as nn
-import torchvision.models
 import transformers
-from transformers import AutoModel, AutoTokenizer
 from ts.torch_handler.base_handler import BaseHandler
+
+from stub import FusionClassifier
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.info("Transformers version %s", transformers.__version__)
-
-
-class FusionClassifier(nn.Module):
-    def __init__(self):
-        super(FusionClassifier, self).__init__()
-        self.tokenizer = AutoTokenizer.from_pretrained("klue/bert-base", use_fast=True)
-
-        self.bert = AutoModel.from_pretrained("klue/bert-base")
-        for param in self.bert.parameters():
-            param.requires_grad = True
-
-        self.conv = nn.Conv2d(1, 3, 3, 1, 1)
-        self.resnet = torchvision.models.resnet50(pretrained=True)
-        self.classifier = nn.Linear(768, 1)
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, text, img):
-        token_ids = self.tokenizer.encode(text)
-        input_ids = torch.tensor(token_ids).unsqueeze(dim=0).to(self.device)
-        attention_mask = torch.tensor([1] * len(input_ids)).unsqueeze(dim=0).to(self.device)
-
-        x1 = self.bert(token_ids, attention_mask).pooler_output
-        x2 = self.conv(img)
-        x2 = self.resnet(x2)
-        x = torch.cat([x1, x2], dim=1)
-        x = self.classifier(x)
-        out = self.sigmoid(x)
-        return out
 
 
 class NLUHandler(BaseHandler):

@@ -1,13 +1,14 @@
 import logging
 import os
 
-import pandas as pd
 import torch
 import torch.nn as nn
 import transformers
 from sentence_transformers import SentenceTransformer
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from ts.torch_handler.base_handler import BaseHandler
+
+from stub import MyDataset, AE
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.info("Transformers version %s", transformers.__version__)
@@ -19,48 +20,6 @@ def get_max(sim, prev_max):
         return v.item(), i.item()
     else:
         return prev_max, -1
-
-
-class MyDataset(Dataset):
-    def __init__(self, csv_path):
-        super(MyDataset, self).__init__()
-
-        self.data = pd.read_csv(csv_path)
-        self.data["embedding"] = self.data["embedding"].map(self.__str2tensor)
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        x = torch.FloatTensor(self.data["embedding"][idx])
-        return x
-
-    @staticmethod
-    def __str2tensor(x):
-        ret = list(map(float, x[1: -1].split(",")))
-        return ret
-
-    def get_answer(self, idx=0):
-        answer = self.data["A"][idx]
-        return answer
-
-
-class AE(nn.Module):
-    def __init__(self):
-        super(AE, self).__init__()
-
-        self.encoder = nn.Linear(768, 64)
-        self.activation = nn.ReLU()
-        self.decoder = nn.Linear(64, 768)
-
-    def encode(self, x):
-        return self.encoder(x)
-
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.activation(x)
-        out = self.decoder(x)
-        return out
 
 
 class NLUHandler(BaseHandler):
@@ -84,7 +43,7 @@ class NLUHandler(BaseHandler):
         model_pt_path = os.path.join(model_dir, serialized_file)
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.dataset = MyDataset(f"{os.curdir}{os.sep}dataset_64{os.extsep}csv")
+        self.dataset = MyDataset(f"{os.curdir}{os.sep}dataset{os.sep}dataset_64{os.extsep}csv")
         self.data_loader = DataLoader(self.dataset, batch_size=512)
         self.model = SentenceTransformer('jhgan/ko-sroberta-multitask')
         self.ae = AE()

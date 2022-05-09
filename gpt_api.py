@@ -6,8 +6,6 @@ import transformers
 from transformers import PreTrainedTokenizerFast
 from ts.torch_handler.base_handler import BaseHandler
 
-from model import KoGPT2Chat
-
 LOGGER = logging.getLogger(__name__)
 LOGGER.info(f"Transformers version {transformers.__version__}")
 

@@ -1,9 +1,12 @@
-import numpy as np
+from torch.utils.data import Dataset
+import pandas as pd
 import torch
 import torch.nn as nn
+import torchvision.models
 from torch.utils.data import Dataset
-from transformers import AutoModel
-from transformers import PreTrainedTokenizerFast, GPT2LMHeadModel
+from transformers import AutoModel, AutoTokenizer
+from transformers import GPT2LMHeadModel
+from transformers import PreTrainedTokenizerFast
 
 U_TKN = '<usr>'
 S_TKN = '<sys>'
@@ -12,6 +15,48 @@ EOS = '</s>'
 MASK = '<unused0>'
 SENT = '<unused1>'
 PAD = '<pad>'
+
+
+class MyDataset(Dataset):
+    def __init__(self, csv_path):
+        super(MyDataset, self).__init__()
+
+        self.data = pd.read_csv(csv_path)
+        self.data["embedding"] = self.data["embedding"].map(self.__str2tensor)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        x = torch.FloatTensor(self.data["embedding"][idx])
+        return x
+
+    @staticmethod
+    def __str2tensor(x):
+        ret = list(map(float, x[1: -1].split(",")))
+        return ret
+
+    def get_answer(self, idx=0):
+        answer = self.data["A"][idx]
+        return answer
+
+
+class AE(nn.Module):
+    def __init__(self):
+        super(AE, self).__init__()
+
+        self.encoder = nn.Linear(768, 64)
+        self.activation = nn.ReLU()
+        self.decoder = nn.Linear(64, 768)
+
+    def encode(self, x):
+        return self.encoder(x)
+
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.activation(x)
+        out = self.decoder(x)
+        return out
 
 
 class EmotionClassifier(nn.Module):
@@ -69,3 +114,31 @@ class ChatService:
                     break
                 a += gen.replace('▁', ' ')
             return a.strip()
+
+
+class FusionClassifier(nn.Module):
+    def __init__(self):
+        super(FusionClassifier, self).__init__()
+        self.tokenizer = AutoTokenizer.from_pretrained("klue/bert-base", use_fast=True)
+
+        self.bert = AutoModel.from_pretrained("klue/bert-base")
+        for param in self.bert.parameters():
+            param.requires_grad = True
+
+        self.conv = nn.Conv2d(1, 3, 3, 1, 1)
+        self.resnet = torchvision.models.resnet50(pretrained=True)
+        self.classifier = nn.Linear(768, 1)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, text, img):
+        token_ids = self.tokenizer.encode(text)
+        input_ids = torch.tensor(token_ids).unsqueeze(dim=0).to(self.device)
+        attention_mask = torch.tensor([1] * len(input_ids)).unsqueeze(dim=0).to(self.device)
+
+        x1 = self.bert(token_ids, attention_mask).pooler_output
+        x2 = self.conv(img)
+        x2 = self.resnet(x2)
+        x = torch.cat([x1, x2], dim=1)
+        x = self.classifier(x)
+        out = self.sigmoid(x)
+        return out
