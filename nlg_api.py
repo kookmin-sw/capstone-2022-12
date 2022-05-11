@@ -43,7 +43,7 @@ class NLUHandler(BaseHandler):
         model_pt_path = os.path.join(model_dir, serialized_file)
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.dataset = MyDataset(f"{os.curdir}{os.sep}dataset{os.sep}dataset_64{os.extsep}csv")
+        self.dataset = MyDataset(f"{os.curdir}{os.sep}dataset_64{os.extsep}csv")
         self.data_loader = DataLoader(self.dataset, batch_size=512)
         self.model = SentenceTransformer('jhgan/ko-sroberta-multitask')
         self.ae = AE()
@@ -89,6 +89,7 @@ class NLUHandler(BaseHandler):
                     max_idx = batch_idx * self.data_loader.batch_size + idx
             ret = self.dataset.get_answer(max_idx)
             inferences.append(ret)
+
             return inferences
 
     def postprocess(self, inference_output):
