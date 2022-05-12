@@ -38,7 +38,7 @@
 # Executables
 *.exe
 *.out
-*.app
+*.server
 
 ### C template
 # Prerequisites
@@ -560,4 +560,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-
