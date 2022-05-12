@@ -41,29 +41,61 @@ const app = express();
 // dbsetting.dbinit();
 
 // db 연결 2
-const client = mysql.createConnection({
-    host: 'localhost',
-    port: '3306',
-    user: 'root',
-    password: 'cnj140535',
-    database: 'aid_db'
-});
+// const client = mysql.createConnection({
+//     host: 'us-cdbr-east-05.cleardb.net',
+//     user: 'be2446026e1d94',
+//     password: 'a7902cb0',
+//     database: 'heroku_d4b1a4548f6a83d'
+// });
 
-client.connect((err) => {
-    if (err)
-    {
-        console.log(err)
-        con.end();
-        throw err;
-    }
-    else {console.log("DB 연결 성공");}
-});
+// client.connect((err) => {
+//     if (err)
+//     {
+//         console.log(err)
+//         con.end();
+//         throw err;
+//     }
+//     else {console.log("DB 연결 성공");}
+// });
+
+var db_config = {
+    host: 'us-cdbr-east-05.cleardb.net',
+    user: 'be2446026e1d94',
+    password: 'a7902cb0',
+    database: 'heroku_d4b1a4548f6a83d'
+};
+var client;
+
+function handleDisconnect() {
+    client = mysql.createConnection(db_config); // Recreate the connection, since
+    // the old one cannot be reused.
+
+    client.connect(function (err) {              // The server is either down
+        if (err) {                                     // or restarting (takes a while sometimes).
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+        }                                     // to avoid a hot loop, and to allow our node script to
+    });                                     // process asynchronous requests in the meantime.
+    // If you're also serving http, display a 503 error.
+    client.on('error', function (err) {
+        console.log('db error', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                  // server variable configures this)
+        }
+    });
+}
+
+handleDisconnect();
+
+
 
 // 정적 파일 설정 (미들웨어) 3
 app.use(express.static(path.join(__dirname, '/public')));
 
 // ejs 설정 4
-app.set('views', __dirname + '\\views');
+app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 // 정제 (미들웨어) 5
@@ -355,8 +387,8 @@ app.post('/info', (req, res) => {
 //     console.log('3000 port running...');
 // });
 
-app.listen(3000, function(){
-    console.log('3000 port running...');
+app.listen(process.env.PORT || 80, function(){
+    console.log('port running...');
     // 매주 일요일마다 메일 대상자에게 메일전송
     schedule.scheduleJob('* * * * * 0', function () {
         console.log('매주 일요일에 실행.. 메일 보내기');

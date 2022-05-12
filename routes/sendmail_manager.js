@@ -6,23 +6,54 @@ const nodemailer = require('nodemailer');
 var router = express.Router();
 
 // db 연결
-const client = mysql.createConnection({
-    host: 'localhost',
-    port: '3306',
-    user: 'root',
-    password: 'cnj140535',
-    database: 'aid_db'
-});
+// const client = mysql.createConnection({
+//     host: 'us-cdbr-east-05.cleardb.net',
+//     user: 'be2446026e1d94',
+//     password: 'a7902cb0',
+//     database: 'heroku_d4b1a4548f6a83d'
+// });
 
-client.connect((err) => {
-    if (err) {
-        console.log(err)
-        con.end();
-        throw err;
-    }
-    else { console.log("DB 연결 성공"); }
-});
+// client.connect((err) => {
+//     if (err) {
+//         console.log(err)
+//         con.end();
+//         throw err;
+//     }
+//     else { console.log("DB 연결 성공"); }
+// });
 
+
+var db_config = {
+    host: 'us-cdbr-east-05.cleardb.net',
+    user: 'be2446026e1d94',
+    password: 'a7902cb0',
+    database: 'heroku_d4b1a4548f6a83d'
+};
+
+var client;
+
+function handleDisconnect() {
+    client = mysql.createConnection(db_config); // Recreate the connection, since
+    // the old one cannot be reused.
+
+    client.connect(function (err) {              // The server is either down
+        if (err) {                                     // or restarting (takes a while sometimes).
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+        }                                     // to avoid a hot loop, and to allow our node script to
+    });                                     // process asynchronous requests in the meantime.
+    // If you're also serving http, display a 503 error.
+    client.on('error', function (err) {
+        console.log('db error', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                  // server variable configures this)
+        }
+    });
+}
+
+handleDisconnect();
 
 // 메일보내기
 router.post("/sendmail_manager", function (req, res, next) {

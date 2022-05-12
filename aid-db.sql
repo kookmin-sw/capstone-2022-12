@@ -14,13 +14,13 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema AID_DB
 -- -----------------------------------------------------
-CREATE DATABASE IF NOT EXISTS `AID_DB` DEFAULT CHARACTER SET utf8 ;
-USE `AID_DB` ;
+CREATE DATABASE IF NOT EXISTS `heroku_d4b1a4548f6a83d` DEFAULT CHARACTER SET utf8 ;
+USE `heroku_d4b1a4548f6a83d` ;
 
 -- -----------------------------------------------------
 -- Table `AID_DB`.`USER`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `AID_DB`.`USER` (
+CREATE TABLE IF NOT EXISTS `heroku_d4b1a4548f6a83d`.`USER` (
   `Serial_Number` VARCHAR(12) NOT NULL,
   `ID` VARCHAR(24) NOT NULL,
   `PW` VARCHAR(24) NOT NULL,
@@ -36,7 +36,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `AID_DB`.`Manager`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `AID_DB`.`MANAGER` (
+CREATE TABLE IF NOT EXISTS `heroku_d4b1a4548f6a83d`.`MANAGER` (
   `ID` VARCHAR(24) NOT NULL,
   `PW` VARCHAR(24) NOT NULL,
   `USER_Serial_Number` VARCHAR(12) NOT NULL,
