@@ -1,0 +1,18 @@
+DB 에러 처리..
+
+heroku clearDB 무료버전에서는 정해진 이름의 DB만 사용가능 heroku_d4b1a4548f6a83d
+https://stackoverflow.com/questions/25446937/mysql-access-denied-for-user-to-database/25447163
+sql에서 aid_db > heroku_d4b1a4548f6a83d 바꿔서 하기!!
+
+DB export , import 하기
+https://velog.io/@leitmotif/2-Heroku%EC%97%90-MySQL-%EC%97%B0%EB%8F%99%ED%95%98%EA%B8%B0
+DB연결은 일단 완료
+
+
+createConnection >> createPool
+https://snakehips.tistory.com/entry/Heroku-ClearDB-CORS-error-PROTOCOLCONNECTIONLOST-code-H10-App-crashed
+바꾸기 전엔 일단 되긴 했는데 바꾸니까 그냥 안됨..
+어쨌든 연결이 끊어져서 생기는 문제인듯
+또한, 경로 설정 다시 잘 해줘야할듯
+
+

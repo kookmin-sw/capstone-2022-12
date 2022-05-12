@@ -1,0 +1,4 @@
+$ heroku config | grep CLEARDB_DATABASE_URL
+ »   CLEARDB_DATABASE_URL: mysql://be2446026e1d94:a7902cb0@us-cdbr-east-05.cleardb.net/heroku_d4b1a4548f6a83d?reconnect=true
+
+mysql://[user name]:[password]@[Host name]/[password2]?reconnect=true
