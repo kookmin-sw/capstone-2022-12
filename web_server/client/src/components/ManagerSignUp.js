@@ -15,10 +15,13 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import {registerUser} from "../_actions/user_action";
+import {useDispatch} from "react-redux";
 
 const theme = createTheme();
 
 export default function ManagerSignUp(props) {
+    const dispatch = useDispatch();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
