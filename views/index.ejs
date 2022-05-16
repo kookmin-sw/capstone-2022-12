@@ -9,6 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/354885cafc.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/login.css">
+    <script>
+        function displayRegister(event) {
+            if (event.target.value == 'user') {
+                const div1 = document.getElementsByName('manager_info')[0];
+                const div2 = document.getElementsByName('user_info')[0];
+
+                if (div1.style.display == 'inline') { div1.style.display = 'none'; }
+                div2.style.display = 'inline';
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -47,6 +58,75 @@
                                 <button>통계 정보 메일로 받기</button>
                             </form>
                         </li>
+
+                        <section>
+                            <div class="container_form">
+                                <form action="/add_user" method="post">
+                                    <ul>
+                                        <li>
+                                            <div>
+                                                <p></p>
+                                                <label><input type="radio" name="check" value="user" onclick="displayRegister(event)" required/>사용자 정보 추가</label></div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div name="manager_info" style="display: none;">
+                                        <div>
+                                            
+                                            <label>보호자 비밀번호</label>
+                                            <input type="password" name="m_pw">
+                                        </div>
+                                        <div>
+                                            <label>보호자 이름</label>
+                                            <input type="text" name="m_name"><br>
+                                            <div>
+                                                <label>보호자 관계</label>
+                                                <label><input type="radio" name="relation" value="Family" checked required>가족</label>
+                                                <label><input type="radio" name="relation" value="Agency" required>기관</label>    
+                                            </div>
+                                            <label>보호자 E-mail</label>
+                                            <input type="text" name="m_email"><br>
+                                            <label>보호자 전화번호</label>
+                                            <input type="number" name="m_number">
+                                        </div>
+                                        <p></p><p></p>
+                                        <div>
+                                            <label>사용자 정보 확인</label>
+                                            <div >
+                                                <label>제품 시리얼 번호</label>
+                                                <input type="text" name='m_u_serial'>
+                                            </div>
+                                            <div>
+                                                <label>사용자 아이디</label>
+                                                <input type="text" name='m_u_id'><br>
+                                                <label>사용자 비밀번호</label>
+                                                <input type="password" name="m_u_pw">
+                                            </div>                        
+                                        </div>
+                                    </div>
+                                    <p></p><p></p>
+                                    <div name="user_info" style="display: none;">
+                                        <div >
+                                            <label>제품 시리얼 번호</label>
+                                            <input type="text" name='serial'><br>
+                                        </div>
+                                        <div>
+                                            <label>보호자 아이디</label>
+                                            <input type="text" name='my_m_id'><br>
+                                            <label>사용자 아이디</label>
+                                            <input type="text" name='u_id'><br>
+                                            <label>사용자 비밀번호</label>
+                                            <input type="password" name="u_pw">
+                                        </div>
+                                        <div>
+                                            <label>사용자 이름</label>
+                                            <input type="text" name="u_name"><br>
+                                        </div>
+                                    </div>
+                                    <input type="submit" value="사용자 정보 추가하기">
+                                </form>
+                            </div>
+                        </section>
                     <% } %>
                 </ul>
 

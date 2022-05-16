@@ -14,5 +14,8 @@ https://snakehips.tistory.com/entry/Heroku-ClearDB-CORS-error-PROTOCOLCONNECTION
 바꾸기 전엔 일단 되긴 했는데 바꾸니까 그냥 안됨..
 어쨌든 연결이 끊어져서 생기는 문제인듯
 또한, 경로 설정 다시 잘 해줘야할듯
+>> 결론: pool안씀.. 경로설정 바꾸니까 잘 작동
 
-
+서버 올렸더니 DB 서버가 계속 끊어지는 문제 발생..
+> 끊어질때마다 처리해줘야함
+https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=mingjn&logNo=221051145760

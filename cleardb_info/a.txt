@@ -2,3 +2,16 @@ $ heroku config | grep CLEARDB_DATABASE_URL
  »   CLEARDB_DATABASE_URL: mysql://be2446026e1d94:a7902cb0@us-cdbr-east-05.cleardb.net/heroku_d4b1a4548f6a83d?reconnect=true
 
 mysql://[user name]:[password]@[Host name]/[password2]?reconnect=true
+
+
+
+
+<!-- <form action="/sendmail_manager" method="post"></form>
+                                <select name="user_info">
+                                    <% for (var i=0; i< user_info.length; i++){ %>
+                                        <option value= <%= user_info[i] %> > <%= user_info[i].Name %> 님</option>
+                                    <% } %>
+                                </select>
+                                <input type="submit" value="데이터 통계보기">
+                                
+                            </form> -->
