@@ -148,19 +148,25 @@ app.post('/talk', (req, res) => {
     //     res.end();
     // });
 
-    // 일단은 들어가는거 확인
-    // serial이 존재하는 경우에만 insert하기
-    // 근데 들어가는 변수 잘 확인하기
-    try {
-        client.query('insert into log(date, emotion, talk, user_Serial_Number) values(?,?,?,?)', [NOW(), emotion, talk, serial]);
-        res.write('성공');
-        res.end();  
-    }
-    catch (err) {
-        res.write('에러');
-        res.end();
-    }
+    client.query('select Serial_Number from user where  Serial_Number=?', [serial], (err, data) => {
+        if (data.length == 0) {
+            res.write('해당 serial을 가진 user는 없습니다');
+            res.end();
 
+        }
+        else {
+            try {
+                handleDisconnect();
+                client.query('insert into log(date, emotion, talk, user_Serial_Number) values(DATE_ADD(NOW(), INTERVAL 9 HOUR),?,?,?)', [emotion, talk, serial]);
+                res.write('성공');
+                res.end();
+            }
+            catch (err) {
+                res.write('실패');
+                res.end();
+            }
+        }
+    });
     // const path = "./Log/" + serial + ".json";
 
     // fs.readFile(path, 'utf8', function readFileCallback(err, data) {
@@ -472,7 +478,7 @@ app.get('/logout', (req, res) => {
 app.get('/info', (req, res) => {
 
     if (req.session.check == 'user'){
-        client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(NOW(),INTERVAL -2 WEEK ) AND NOW() AND user_Serial_Number=? ORDER BY date', [req.session.serial_number], (err, data) => {
+        client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(DATE_ADD(NOW(), INTERVAL 9 HOUR),INTERVAL -2 WEEK ) AND DATE_ADD(NOW(), INTERVAL 9 HOUR) AND user_Serial_Number=? ORDER BY date', [req.session.serial_number], (err, data) => {
             try {
                 console.log('통계자료 확인하기');
                 let user_emotion = { "depressed": 0, "not_depressed": 0 };
@@ -508,7 +514,7 @@ app.get('/info', (req, res) => {
         });
     }
     else {
-        client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(NOW(),INTERVAL -2 WEEK ) AND NOW() AND user_Serial_Number=? ORDER BY date', [req.session.user_info[0]['user_Serial_Number']], (err, data) => {
+        client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(DATE_ADD(NOW(), INTERVAL 9 HOUR),INTERVAL -2 WEEK ) AND DATE_ADD(NOW(), INTERVAL 9 HOUR) AND user_Serial_Number=? ORDER BY date', [req.session.user_info[0]['user_Serial_Number']], (err, data) => {
             try {
                 console.log('통계자료 확인하기');
                 let user_emotion = { "depressed": 0, "not_depressed": 0 };
@@ -563,7 +569,7 @@ app.listen(process.env.PORT || 80, function(){
         client.query('SELECT DISTINCT user_Serial_Number FROM log', (err, data) => {
             for (var i=0; i<data.length; i++) {
                 let serial = data[i]['user_Serial_Number'];
-                client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(NOW(),INTERVAL -2 WEEK ) AND NOW() AND user_Serial_Number=? ORDER BY date', [serial], (err, data) => {
+                client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(DATE_ADD(NOW(), INTERVAL 9 HOUR),INTERVAL -2 WEEK ) AND DATE_ADD(NOW(), INTERVAL 9 HOUR) AND user_Serial_Number=? ORDER BY date', [serial], (err, data) => {
                     let user_emotion = { "depressed": 0, "not_depressed": 0 };
                     let user_text = [];
 

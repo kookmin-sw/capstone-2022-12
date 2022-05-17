@@ -19,3 +19,17 @@ https://snakehips.tistory.com/entry/Heroku-ClearDB-CORS-error-PROTOCOLCONNECTION
 서버 올렸더니 DB 서버가 계속 끊어지는 문제 발생..
 > 끊어질때마다 처리해줘야함
 https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=mingjn&logNo=221051145760
+
+
+
+response = requests.post("https://aid-kookmin.herokuapp.com/talk", json={"serial":"serial1", "talk":"nono2","emotion":"depressed"})
+다른 곳으로부터 request받아 db에 log insert할 때 문제 발생
+1. connection이 자꾸 끊어져서 그런것 같음 > mysql 설정을 바꿔보자 
+https://blog.naver.com/PostView.naver?blogId=rnjsrldnd123&logNo=221482042732&parentCategoryNo=31&categoryNo=&viewDate=&isShowPopularPosts=true&from=search
+ >> heroku에서 db설정파일 바꿀수 있는지도 모르고, 결론은 이거 아님
+
+ 2. NOW()함수가 반영이 안됐음.. 
+
+ client.query('insert into log(date, emotion, talk, user_Serial_Number) values(?,?,?,?)', [NOW(), emotion, talk, serial]); (x)
+ client.query('insert into log(date, emotion, talk, user_Serial_Number) values(NOW(),?,?,?)', [emotion, talk, serial]); (o)
+ DATE_ADD(NOW(), INTERVAL 9 HOUR) // 시간 맞춰주기
