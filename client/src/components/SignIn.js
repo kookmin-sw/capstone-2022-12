@@ -24,40 +24,39 @@ export default function SignIn() {
     const navigate = useNavigate();
     const [userType, setUserType] = React.useState('user');
 
-    const handleSwitch = (e) => {
-        if (e.currentTarget.checked) {
-            setUserType("user");
-        } else {
-            setUserType("manager");
-        }
-    }
     const handleRadioChange = (event) => {
         setUserType(event.currentTarget.value);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-
         const body = {
-            chk: userType,
+            userType: userType,
             id: data.get('id'),
             pw: data.get('pw'),
         }
+        console.log("request to server with");
+        console.log(body);
 
-        axios.post("https://kookmin-aid.herokuapp.com/login", body)
+        await axios.post("http://localhost:80/login", body)
             .then(response => {
+                console.log("response from server with")
                 const data = response.data;
-                console.log("로그인 서버 응답")
                 console.log(data);
-                navigate("/dashboard", {
-                    state: {
-                        name: data.name,
-                        chk: data.check,
-                        is_logined: data.is_logined,
-                        serial_number: data.serial_number
-                    }
-                });
+                if (data.loginSuccess) {
+                    navigate("/dashboard", {
+                        state: {
+                            currentId: data.id,
+                            userType: userType,
+                            userSerials: data.userSerials,
+                            userNames: data.userNames,
+                            userTels: data.userTels,
+                        }
+                    });
+                } else {
+                    alert("잘못된 회원 정보입니다!");
+                }
             });
     };
 

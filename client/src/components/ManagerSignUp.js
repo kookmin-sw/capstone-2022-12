@@ -11,13 +11,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import axios from 'axios';
 
 const theme = createTheme();
 
-export default function ManagerSignUp(props) {
-    const handleSubmit = (event) => {
+export default function ManagerSignUp() {
+    const navigate = useNavigate();
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const body = {
@@ -31,13 +33,17 @@ export default function ManagerSignUp(props) {
             m_relation: data.get('m_relation'),
             m_email: data.get('m_email'),
             m_number: data.get('m_number'),
-        
+
         }
 
-        axios.post('/register', body)
+        axios.post('http://localhost:80/register', body)
             .then(response => {
-                const token = response.data;
-                console.log("access!");
+                if (response.data.registerSuccess) {
+                    alert("회원가입이 정상적으로 완료되었습니다");
+                    navigate("/");
+                } else {
+                    alert("기입된 정보를 다시 확인해주세요");
+                }
             });
     };
 

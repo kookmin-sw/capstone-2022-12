@@ -10,30 +10,36 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import axios from 'axios'
 
 const theme = createTheme();
 
-export default function UserSignUp(props) {
+export default function UserSignUp() {
+
+    const navigate = useNavigate();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const body = {
-            check: 'user',
+            userType: 'user',
             serial: data.get('serial'),
-            u_id: data.get('u_id'),
-            u_pw: data.get('u_pw'),
-            u_name: data.get('u_name'),
-            u_age: data.get('u_age'),
-            u_address: data.get("u_address"),
-            u_number: data.get("u_number")
+            userId: data.get('u_id'),
+            userPw: data.get('u_pw'),
+            userName: data.get('u_name'),
+            userAge: data.get('u_age'),
+            userAddress: data.get("u_address"),
+            userTel: data.get("u_number")
         }
-
-        axios.post('/register', body)
+        axios.post('http://localhost:80/register', body)
             .then(response => {
-                const token = response.data;
-                console.log("access!");
+                if (response.data.registerSuccess) {
+                    alert("회원가입이 정상적으로 완료되었습니다");
+                    navigate("/");
+                } else {
+                    alert("기입된 정보를 다시 확인해주세요");
+                }
             });
     };
 

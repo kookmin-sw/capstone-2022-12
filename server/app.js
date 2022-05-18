@@ -16,11 +16,13 @@ const cookieParser = require('cookie-parser');
 const schedule = require('node-schedule');
 const sendMailRouter = require('./routes/sendmail');
 const sendMailRouterManager = require('./routes/sendmail_manager');
+// const userInfoPost = require('./routes/user_info_post');
 const res = require('express/lib/response');
 const request = require('request');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
+const cors = require('cors');
 
 function getSortedDate(date) {
     keys = [];
@@ -35,33 +37,19 @@ function getSortedDate(date) {
 const app = express();
 
 
-// db 생성
-// dbsetting.dbinit();
-
-// db 연결 2
-// const client = mysql.createConnection({
-//     host: 'us-cdbr-east-05.cleardb.net',
-//     user: 'be2446026e1d94',
-//     password: 'a7902cb0',
-//     database: 'heroku_d4b1a4548f6a83d'
-// });
-
-// client.connect((err) => {
-//     if (err)
-//     {
-//         console.log(err)
-//         con.end();
-//         throw err;
-//     }
-//     else {console.log("DB 연결 성공");}
-// });
-
 var db_config = {
     host: 'us-cdbr-east-05.cleardb.net',
     user: 'be2446026e1d94',
     password: 'a7902cb0',
     database: 'heroku_d4b1a4548f6a83d'
 };
+// var db_config = {
+//     host: 'localhost',
+//     port: '3306',
+//     user: 'root',
+//     password: 'cnj140535',
+//     database: 'aid_db_2'
+// };
 var client;
 
 function handleDisconnect() {
@@ -90,13 +78,18 @@ handleDisconnect();
 
 // 정적 파일 설정 (미들웨어) 3
 app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 
-// ejs 설정 4
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
+// // ejs 설정 4
+// app.set('views', __dirname + '/views');
+// app.set('view engine', 'ejs');
+
+// 외부 서버로부터 요청받기위함
+app.use(cors());
 
 // 정제 (미들웨어) 5
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 // 세션 (미들웨어) 6
 app.use(session({
@@ -109,36 +102,91 @@ app.use(session({
 // 메일 보내기 모듈
 app.use('/', sendMailRouter);
 app.use('/', sendMailRouterManager);
+// app.use('/', userInfoPost)
+
+app.get("/", function (res, req) {
+    res.sendFile(path.join(__dirname, '../client/build/index.html'))
+})
+
+app.post('/talk', (req, res) => {
+    handleDisconnect();
+
+    console.log(req);
+    console.log(req.body);
+    const body = req.body;
+    const serial = body.serial;
+    const talk = body.talk;
+    const emotion = body.emotion;
+    // client.query('select Serial_Number from user ', (err, data) => {
+    //     res.write('받았다');
+    //     res.end();
+    // });
+
+    client.query('select Serial_Number from user where  Serial_Number=?', [serial], (err, data) => {
+        if (data.length == 0) {
+            res.write('해당 serial을 가진 user는 없습니다');
+            res.end();
+
+        } else {
+            try {
+                handleDisconnect();
+                client.query('insert into log(date, emotion, talk, user_Serial_Number) values(DATE_ADD(NOW(), INTERVAL 9 HOUR),?,?,?)', [emotion, talk, serial]);
+                res.write('성공');
+                res.end();
+            } catch (err) {
+                res.write('실패');
+                res.end();
+            }
+        }
+    });
+    // const path = "./Log/" + serial + ".json";
+
+    // fs.readFile(path, 'utf8', function readFileCallback(err, data) {
+    //     if (err) {
+    //         console.log(err);
+    //     } else {
+
+    //         const today = new Date()
+    //         const year = today.toLocaleDateString('ko-KR', {
+    //             year: 'numeric',
+    //         });
+    //         const month = today.toLocaleDateString('ko-KR', {
+    //             month: '2-digit',
+    //         });
+    //         const day = today.toLocaleDateString('ko-KR', {
+    //             day: '2-digit',
+    //         });
+    //         const date = year + month + day;
+    //         console.log(date);
+    //         const time = today.toLocaleTimeString("ko-KR");
+
+    //         let arr = [time, emotion, talk];
+    //         obj = JSON.parse(data); //now it an object
+    //         try {
+    //             obj.date.push(arr);
+    //         }
+    //         catch(err) {
+    //             obj.push({date: []});
+    //             console.log('aaaa');
+    //             console.log(err);
+    //         }
+
+    //         // obj.2022-04-26.push({ "2022-04-26": [talk, emotion]}); //add some data
+    //         json = JSON.stringify(obj); //convert it back to json
+    //         fs.writeFile(path, json, 'utf8', callback); // write it back
+    //     }
+    // });
 
 
-// 메인페이지
-app.get('/', (req, res) => {
-    console.log('메인페이지 작동');
-    console.log(req.session);
-    if (req.session.is_logined == true) {
-        res.render('index', {
-            is_logined: req.session.is_logined,
-            name: req.session.name,
-            check: req.session.check
-        });
-    } else {
-        res.render('index', {
-            is_logined: false
-        });
-    }
-});
+    // res.write('받았다');
+    // res.end();
 
 
-// 회원가입
-app.get('/register', (req, res) => {
-    console.log('회원가입 페이지');
-    res.render('register');
 });
 
 app.post('/register', (req, res) => {
-    console.log('회원가입 하는중')
     const body = req.body;
-    if (body.check === "user") {
+    if (body.userType === "user") {
         const serial = body.serial;
         let u_id = body.userId;
         let u_pw = body.userPw;
@@ -146,143 +194,174 @@ app.post('/register', (req, res) => {
         const u_age = body.userAge;
         const u_address = body.userAddress;
         const u_number = body.userTel
+        console.log(`user ${u_id} tries to register service`);
+
         u_id = encrypt(u_id);
         u_pw = encrypt(u_pw);
+
         client.query('select Serial_Number from user where Serial_Number=?', [serial], (err, data) => {
             if (data.length !== 0) {
-                console.log('중복된 시리얼 번호');
-                res.redirect('/login');
+                console.log(`duplicated serial ${serial}`);
+                res.send({registerSuccess: false})
             } else {
                 client.query('select * from user where ID=?', [u_id], (err, data) => {
                     if (data.length === 0) {
-                        console.log('회원가입 성공');
-                        // Json파일 생성
-                        const file_path = './Log/' + serial + '.json'
-                        let user_json = {[getYYMMDD()]: []};
-                        user_json = JSON.stringify(user_json);
-                        fs.writeFileSync(file_path, user_json)
-                        // DB 삽입
-                        client.query('insert into user(Serial_Number, ID, PW, Name, Age, Address, Number, Log_Path) values(?,?,?,?,?,?,?,?)', [
-                            serial, u_id, u_pw, u_name, u_age, u_address, u_number, file_path
+                        console.log(`user ${u_id} registered`);
+                        client.query('insert into user(Serial_Number, ID, PW, Name, Age, Address, Number) values(?,?,?,?,?,?,?)', [
+                            serial, u_id, u_pw, u_name, u_age, u_address, u_number
                         ]);
-                        res.redirect('/');
+                        res.send({registerSuccess: true})
                     } else {
-                        console.log('중복된 ID');
-                        // res.send('<script>alert("회원가입 실패\n중복된 ID입니다.");</script>');
-                        res.redirect('/login');
+                        console.log(`duplicated user id ${u_id}`);
+                        res.send({registerSuccess: false})
                     }
                 });
             }
         });
     } else {
-        const serial = body.m_u_serial;
+        const serial = body.serial;
         let m_u_id = body.m_u_id;
         let m_u_pw = body.m_u_pw;
-
         m_u_id = encrypt(m_u_id);
         m_u_pw = encrypt(m_u_pw);
-
         client.query('select Serial_Number, ID, PW from user where Serial_Number=?', [serial], (err, data) => {
-            if (data.length == 0) {
-                console.log('등록되지 않은 사용자');
-                // res.send('<script>alert("회원가입 실패\n등록되지 않은 사용자 입니다.");</script>');
-                res.redirect('/');
+            if (data.length === 0) {
+                console.log(`serial ${serial} is not exist`);
+                res.send({registerSuccess: false})
             } else {
-                if (m_u_id == data[0].ID && m_u_pw == data[0].PW && serial == data[0].Serial_Number) {
-                    console.log('사용자 정보 확인 완료');
+                if (m_u_id === data[0].ID && m_u_pw === data[0].PW && serial === data[0].Serial_Number) {
+                    console.log(`user ${m_u_id} is approved`);
                     let m_id = body.m_id;
                     let m_pw = body.m_pw;
                     const m_name = body.m_name;
                     const m_relation = body.relation;
                     const m_email = body.m_email;
                     const m_number = body.m_number;
-
                     m_id = encrypt(m_id);
                     m_pw = encrypt(m_pw);
                     client.query('select * from manager where ID=?', [m_id], (err, data) => {
-                        if (data.length == 0) {
-                            console.log('회원가입 성공');
-                            client.query('insert into manager(ID, PW, USER_Serial_Number, Name, Relationship, Email, Number) values(?,?,?,?,?,?,?)', [
-                                m_id, m_pw, serial, m_name, m_relation, m_email, m_number
+                        if (data.length === 0) {
+                            console.log(`manager ${m_id} registered`);
+                            client.query('insert into manager(ID, PW, Name, Relationship, Email, Number) values(?,?,?,?,?,?)', [
+                                m_id, m_pw, m_name, m_relation, m_email, m_number
                             ]);
+                            client.query('insert into manager_has_user(manager_ID, user_Serial_Number) values(?,?)', [
+                                m_id, serial
+                            ]);
+                            res.send({registerSuccess: true})
                         } else {
                             console.log('중복된 ID');
-                            // res.send('<script>alert("회원가입 실패\n중복된 ID입니다.");</script>');
-                            res.redirect('/login');
+                            res.send({registerSuccess: false})
                         }
                     });
                 } else {
                     console.log('잘못된 사용자 정보');
-                    // res.send('<script>alert("회원가입 실패\n잘못된 사용자 정보입니다.");</script>');
-                    res.redirect('/');
+                    res.send({registerSuccess: false})
                 }
             }
         });
     }
 });
 
-
-// 로그인
-app.get('/login', (req, res) => {
-    console.log('로그인 작동');
-    res.render('login');
-});
-
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const body = req.body;
-    let id = body.id;
-    let pw = body.pw;
-    const chk = body.check;
+    const id = body.id;
+    const pw = body.pw;
+    const userType = body.userType;
+    const encryptedId = encrypt(id);
+    const encryptedPw = encrypt(pw);
 
-    id = encrypt(id);
-    pw = encrypt(pw);
-
-    if (chk == 'user') {
-        client.query('select Serial_Number, ID, PW, Name from user where ID=?', [id], (err, data) => {
-            if (data.length == 0) {
-                console.log('등록된 정보가 없습니다.');
-                res.render('login', {});
-            } else if (id == data[0].ID && pw == data[0].PW) {
-                console.log('로그인 성공');
+    if (userType === 'user') {
+        await client.query('select Serial_Number, ID, PW, Name, Number from user where ID=?', [encryptedId], (err, data) => {
+            if (data.length === 0) {
+                console.log(`userID ${id} is not registered.`);
+                res.send({loginSuccess: false});
+            } else if (encryptedId === data[0].ID && encryptedPw === data[0].PW) {
+                console.log(`userID ${id} login correctly.`)
+                res.send({
+                    loginSuccess: true,
+                    id: id,
+                    userSerials: [data[0].Serial_Number],
+                    userNames: [data[0].Name],
+                    userTels: [data[0].Number]
+                });
                 // 세션에 추가
                 req.session.is_logined = true;
                 req.session.serial_number = data[0].Serial_Number;
-                req.session.check = chk;
+                req.session.check = userType;
                 req.session.name = data[0].Name;
-                req.session.save(function () { // 세션 스토어에 적용하는 작업
-                    res.render('index', { // 정보전달
-                        name: data[0].Name,
-                        is_logined: true,
-                        check: req.session.check
-                    });
-                });
+                req.session.save();
             } else {
-                console.log('로그인 실패\nID 또는 PW를 확인해주세요');
-                res.render('login', {});
+                console.log(`userID ${id}: not correct id or password.`);
+                res.send({loginSuccess: false});
             }
         });
     } else {
-        client.query('select USER_Serial_Number, ID, PW, Name, Email, Number from manager where ID=?', [id], (err, data) => {
-            if (data.length == 0) {
-                console.log('등록된 정보가 없습니다.');
-                res.render('login', {});
-            } else if (id == data[0].ID && pw == data[0].PW) {
-                console.log('로그인 성공');
-                // 세션에 추가
-                req.session.is_logined = true;
-                req.session.serial_number = data[0].USER_Serial_Number;
-                req.session.check = 'manager';
-                req.session.name = data[0].Name;
-                req.session.save(function () { // 세션 스토어에 적용하는 작업
-                    res.render('index', { // 정보전달
-                        name: data[0].Name,
-                        is_logined: true,
-                        check: req.session.check
-                    });
-                });
-            } else {
-                // console.log('로그인 실패\nID 또는 PW를 확인해주세요');
-                // res.render('login', {});
+        await client.query('select ID, PW, Name, Email, Number from manager where ID=?', [encryptedId], async (err1, data) => {
+            await client.query('select M.user_Serial_Number, U.Name, U.Age, U.Number from manager_has_user M JOIN user U ON M.user_Serial_Number = U.Serial_Number where M.manager_ID=?', [encryptedId], (err2, userData) => {
+                if (data.length === 0) {
+                    console.log(`managerID ${id} is not registered.`);
+                    res.send({loginSuccess: false});
+                } else if (encryptedId === data[0].ID && encryptedPw === data[0].PW) {
+                    console.log(`managerID ${encryptedId} login correctly.`)
+                    const userSerials = [];
+                    const userNames = [];
+                    const userTels = [];
+                    for (const userDatum of userData) {
+                        userSerials.push(userDatum.user_Serial_Number);
+                        userNames.push(userDatum.Name);
+                        userTels.push(userDatum.Number);
+                    }
+
+                    res.send({
+                        loginSuccess: true,
+                        id: id,
+                        userSerials: userSerials,
+                        userNames: userNames,
+                        userTels: userTels,
+                    })
+
+                    req.session.is_logined = true;
+                    req.session.user_info = userData;
+                    req.session.check = 'manager';
+                    req.session.name = data[0].Name;
+                    req.session.save();
+                } else {
+                    console.log(`managerID ${id}: not correct id or password.`);
+                    res.send({loginSuccess: false});
+                }
+            });
+        });
+    } // end chk manager
+}); // end app post login
+
+// user 정보 추가 (manager 로그인화면에서)
+app.post('/add_user', (req, res) => {
+    console.log(`trying to add user with`);
+    const body = req.body;
+    console.log(body);
+    if (body.check === "user") {
+        const serial = body.serial;
+        let u_id = body.u_id;
+        let u_pw = body.u_pw;
+        let m_id = body.currentId;
+        u_id = encrypt(u_id);
+        u_pw = encrypt(u_pw);
+        m_id = encrypt(m_id);
+        client.query('select Serial_Number, ID, PW, Name from user where Serial_Number=?', [serial], (err, data) => {
+            try {
+                if (data.length === 0) {
+                    console.log(`Invalid user information`);
+                    res.send({registerSuccess: false})
+                }
+                if (u_id === data[0].ID && u_pw === data[0].PW) {
+                    console.log(`appending user to manager ${m_id}`);
+                    client.query('insert into manager_has_user(manager_ID, user_Serial_Number) values(?,?)', [m_id, serial]);
+                    res.send({registerSuccess: true})
+                }
+            } catch (err) {
+                console.log('no information');
+                res.send({registerSuccess: false})
             }
         });
     }
@@ -299,166 +378,122 @@ app.get('/logout', (req, res) => {
 
 });
 
+
 // 통계자료 보기
-app.get('/info', (req, res) => {
-    try {
-        console.log('통계자료 확인하기');
-        console.log(req.session);
-        const path = "./Log/" + req.session.serial_number + ".json";
-
-        const HHMMSS = 0;
-        const EMOTION = 1;
-        const TEXT = 2;
-
-        const user_data = JSON.parse(fs.readFileSync(path).toString());
-        const weeks = get2weeks();
-        let user_emotion = {"depressed": 0, "not_depressed": 0};
-
-        for (var d = 0; d < weeks.length; d++) {
-            day = weeks[d];
-            if (user_data[day] == undefined) {
-                continue;
-            }
-            for (var i = 0; i < user_data[day].length; i++) {
-                user_emotion[user_data[day][i][EMOTION]] += 1
-            }
-        }
-
-        keys = getSortedDate(user_data);
-
-        let last = user_data[keys[0]].at(-1);
-        const last_time = keys[0] + " " + last[HHMMSS];
-        const last_emotion = last[EMOTION];
-        const last_text = last[TEXT];
-
-        res.render('info', {
-            is_logined: req.session.is_logined,
-            check: req.session.check,
-            name: req.session.name,
-            info_data: user_emotion,
-            user_time: last_time,
-            user_emotion: last_emotion,
-            user_text: last_text
-        });
-    } catch (err) {
-        console.log('error occured in data statistics page');
-        res.write("<script>alert('there is no data')</script>");
-        res.write("<script>window.location=\"/\"</script>");
-        // res.redirect('/');
-
-    }
-});
-
 app.post('/info', (req, res) => {
-
+    const body = req.body;
+    client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(DATE_ADD(NOW(), INTERVAL 9 HOUR),INTERVAL -2 WEEK ) AND DATE_ADD(NOW(), INTERVAL 9 HOUR) AND user_Serial_Number=? ORDER BY date', [body.serial], (err, data) => {
+        try {
+            console.log(`check statistics of ${body.serial}`);
+            const userStatus = {"depressed": 0, "notDepressed": 0};
+            for (let i = 0; i < data.length; i++) {
+                userStatus[data[i]['emotion']] += 1
+            }
+            const last = data[data.length - 1];
+            const lastTime = last['date'];
+            const lastEmotion = last['emotion'];
+            const lastText = last['talk'];
+            res.send(
+                {
+                    lastTime,
+                    lastEmotion,
+                    lastText,
+                    userStatus,
+                }
+            )
+        } catch (err) {
+            console.log(`error occurred in data statistics of ${body.serial}`);
+            console.log(err)
+        }
+    });
 });
-
-// app.listen(3000, () => {
-//     console.log('3000 port running...');
-// });
 
 app.listen(process.env.PORT || 80, function () {
     console.log('port running...');
     // 매주 일요일마다 메일 대상자에게 메일전송
-    schedule.scheduleJob('* * * * * 0', function () {
-        console.log('매주 일요일에 실행.. 메일 보내기');
+    schedule.scheduleJob('0 1 2 * * 0', function () {
+        // schedule.scheduleJob(' * * * * * *', function () {
+        console.log('매주 일요일 02시 1분 0초에 실행.. 메일 보내기');
         // Log 폴더 순회하며 각 파일(=user)마다 통계정보 검사해서 depress가 50%이상이면 메일보냄
         // sendmail_auto 파일 새로 만들기
 
-        let dir = 'Log';
-        let files = fs.readdirSync(dir); // 디렉토리를 읽어온다
-        console.log(files);
+        // let dir = 'Log';
+        // let files = fs.readdirSync(dir); // 디렉토리를 읽어온다
+        // console.log(files);
+        client.query('SELECT DISTINCT user_Serial_Number FROM log', (err, data) => {
+            for (var i = 0; i < data.length; i++) {
+                let serial = data[i]['user_Serial_Number'];
+                client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(DATE_ADD(NOW(), INTERVAL 9 HOUR),INTERVAL -2 WEEK ) AND DATE_ADD(NOW(), INTERVAL 9 HOUR) AND user_Serial_Number=? ORDER BY date', [serial], (err, data) => {
+                    let user_emotion = {"depressed": 0, "not_depressed": 0};
+                    let user_text = [];
 
-        try {
-            for (var idx = 0; idx < files.length; idx++) {
-                const path = "./Log/" + files[idx];
-
-                const HHMMSS = 0;
-                const EMOTION = 1;
-                const TEXT = 2;
-                const user_data = JSON.parse(fs.readFileSync(path).toString());
-                const weeks = get2weeks();
-                let user_emotion = {"depressed": 0, "not_depressed": 0};
-                let user_text = [];
-                let cnt = 0;
-                for (var d = 0; d < weeks.length; d++) {
-                    day = weeks[d];
-                    if (user_data[day] == undefined) {
-                        continue;
-                    }
-                    for (var i = 0; i < user_data[day].length; i++) {
-                        user_emotion[user_data[day][i][EMOTION]] += 1;
-                        if (cnt < 10) {
-                            user_text.push(user_data[day][i][TEXT]);
-                            cnt += 1;
+                    for (var i = 0; i < data.length; i++) {
+                        user_emotion[data[i]['emotion']] += 1
+                        if (i < 10) {
+                            user_text.push(data[i]['talk']);
                         }
                     }
-                }
-                console.log(user_text);
-                if (user_emotion['depressed'] > user_emotion['not_depressed']) { //depressed가 not depressed보다 많을 때
-                    // console.log('우울증 위험합니다')
-                    let dep = parseInt((user_emotion['depressed'] / (user_emotion['depressed'] + user_emotion['not_depressed'])) * 100) // dep 비율
-                    let serial = files[idx].split('.')[0]
-                    let status;
-                    if (dep > 75) {
-                        status = "매우 위험";
-                    } else {
-                        status = "위험";
-                    }
-
-                    let transporter = nodemailer.createTransport({
-                        service: 'gmail',
-                        host: 'smtp.gmail.com',
-                        port: 587,
-                        secure: false,
-                        auth: {
-                            user: 'kookminaid17@gmail.com',  // gmail 계정 아이디를 입력
-                            pass: 'ekfbrnqmxkhzqjnd'          // gmail 계정의 비밀번호를 입력
+                    if (user_emotion['depressed'] > user_emotion['not_depressed']) { //depressed가 not depressed보다 많을 때
+                        // console.log('우울증 위험합니다')
+                        let dep = parseInt((user_emotion['depressed'] / (user_emotion['depressed'] + user_emotion['not_depressed'])) * 100) // dep 비율
+                        let status;
+                        if (dep > 75) {
+                            status = "매우 위험";
+                        } else {
+                            status = "위험";
                         }
-                    });
-                    client.query('select Email from manager where USER_Serial_Number=?', [serial], (err, data) => {
-                        let email = JSON.parse(JSON.stringify(data[0]))['Email'];
 
-                        client.query('select Name from user where Serial_Number=?', [serial], (err, name) => {
-                            let user_name = JSON.parse(JSON.stringify(name[0]))['Name'];
-                            // console.log(user_name);
-                            let html_content;
-                            ejs.renderFile('./views/email.ejs', {
-                                user_name: user_name,
-                                dep: dep,
-                                status: status,
-                                user_text: user_text,
-                            }, function (err, data) {
-                                if (err) {
-                                    console.log(err)
-                                }
-                                html_content = data;
-                            });
-
-                            let mailOptions = {
-                                from: 'kookminaid17@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
-                                to: email,                     // 수신 메일 주소
-                                subject: 'AID 우울증 판단 결과',   // 제목
-                                html: html_content,
-                                // text: "2주간의 우울증 판단 결과 우울증 위험도가 높습니다", // 내용
-                            };
-
-                            transporter.sendMail(mailOptions, function (error, info) {
-                                if (error) {
-                                    console.log(error);
-                                } else {
-                                    console.log('Email sent: ' + info.response);
-                                }
-                            });
+                        let transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            host: 'smtp.gmail.com',
+                            port: 587,
+                            secure: false,
+                            auth: {
+                                user: 'kookminaid17@gmail.com',  // gmail 계정 아이디를 입력
+                                pass: 'ekfbrnqmxkhzqjnd'          // gmail 계정의 비밀번호를 입력
+                            }
                         });
-                    });
-                }
+                        client.query('select M.Email, U.Name from manager_has_user MU JOIN manager M ON  MU.manager_ID = M.ID JOIN user u ON MU.user_Serial_Number = U.Serial_Number where MU.user_Serial_Number=?', [serial], (err, log) => {
 
+                            try {
+                                let email = log[0]['Email'];
+                                let user_name = log[0]['Name'];
+                                let html_content;
+                                ejs.renderFile('./views/email.ejs', {
+                                    user_name: user_name,
+                                    dep: dep,
+                                    status: status,
+                                    user_text: user_text,
+                                }, function (err, data) {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                    html_content = data;
+                                });
+                                let mailOptions = {
+                                    from: 'kookminaid17@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+                                    to: email,                     // 수신 메일 주소
+                                    subject: 'AID 우울증 판단 결과',   // 제목
+                                    html: html_content,
+                                    // text: "2주간의 우울증 판단 결과 우울증 위험도가 높습니다", // 내용
+                                };
+                                transporter.sendMail(mailOptions, function (error, info) {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        console.log('Email sent: ' + info.response);
+                                    }
+                                });
+                            } catch (err) {
+                                console.log('the manager of the user may not be exist');
+                                console.log(err);
+                            }
+                        });
+                    }
+                });
             }
-        } catch (err) {
-            console.log('error occured in auto sending message');
-            console.log(err);
-        }
+        });
+
     });
 });
 

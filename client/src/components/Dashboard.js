@@ -1,11 +1,10 @@
 import * as React from 'react';
-import {useEffect} from 'react';
-import {createTheme, styled, ThemeProvider} from '@mui/material/styles';
+import {useEffect, useState} from 'react';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
-import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -15,143 +14,131 @@ import Orders from './Orders';
 import {useLocation} from 'react-router';
 import Avatar from "@mui/material/Avatar";
 import Title from "./Title";
-import {Radio, RadioGroup, Zoom} from "@mui/material";
+import {Fab, Popover, Radio, RadioGroup, Zoom} from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
-
-const drawerWidth = 240;
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
-})(({theme, open}) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
-}));
-
-const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})(
-    ({theme, open}) => ({
-        '& .MuiDrawer-paper': {
-            position: 'relative',
-            whiteSpace: 'nowrap',
-            width: drawerWidth,
-            transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-            boxSizing: 'border-box',
-            ...(!open && {
-                overflowX: 'hidden',
-                transition: theme.transitions.create('width', {
-                    easing: theme.transitions.easing.sharp,
-                    duration: theme.transitions.duration.leavingScreen,
-                }),
-                width: theme.spacing(7),
-                [theme.breakpoints.up('sm')]: {
-                    width: theme.spacing(9),
-                },
-            }),
-        },
-    }),
-);
+import axios from "axios";
+import AddUserPopup from "./AddUserPopup";
 
 const mdTheme = createTheme();
 
 function DashboardContent() {
     const location = useLocation();
-    const serial = location.state.serial_number;
+    console.log("dashboard information from server");
+    console.log(location.state);
 
-    const [data, setData] = React.useState({
-        name: "string",
-        isManager: location.state.chk,
-        ids: ["string"],
-        names: ["string"],
-        tels: ["string"],
-        lastMessage: "string",
-        lastTime: "string",
-        lastEmotion: "string",
-        statistics: {
-            depressed: 10,
-            notDepressed: 4
-        }
-    });
+    const userType = location.state.userType;
+    const currentId = location.state.currentId;
+    const userSerials = location.state.userSerials;
+    const userNames = location.state.userNames;
+    const userTels = location.state.userTels;
 
-    const [user, setUser] = React.useState("Invalid");
-
-    useEffect(() => {
-        setData({
-            name: '허진우',
-            isManager: true,
-            ids: ["조상연", "장민혁", "황교민", "Invalid"],
-            names: ["조상연", "장민혁", "황교민", "Invalid"],
-            tels: ["010-1234-5678", "010-9875-6545", "010-4548-4548", "Invalid"],
-            lastMessage: "집에 가고 싶다",
-            lastTime: "2022-05-13",
-            lastEmotion: "depressed",
-            statistics: {
-                depressed: 10,
-                notDepressed: 4,
+    const [userInfo, setUserInfo] = useState(
+        {
+            lastTime: 0,
+            lastEmotion: '',
+            lastText: '',
+            userStatus: {
+                depressed: 0,
+                notDepressed: 0
             }
-        });
-    }, [])
+        }
+    );
 
-    // useEffect(async () => {
-    //     const data = {
-    //         serial: location.state.serial
-    //     }
-    //     console.log("서버에 정보 요청")
-    //     console.log(data);
-    //     await axios.post("https://aid-kookmin.herokuapp.com/info", data)
-    //         .then(response => {
-    //             const data = response.data;
-    //             console.log(data);
-    //             setData(data);
-    //         });
-    // }, []);
+    const [userIdx, setUserIdx] = useState(-1);
+
+
+    useEffect(async () => {
+        const body = {
+            userType: userType,
+            serial: userSerials[userIdx],
+        }
+
+        if (userIdx === -1) {
+            return;
+        }
+
+        console.log(`request user serial ${body.serial} to server`);
+        console.log(body);
+        await axios.post("http://localhost:80/info", body).then(
+            response => {
+                console.log(`received ${userSerials[userIdx]} info from server`);
+                console.log(response.data);
+                setUserInfo({
+                        lastTime: response.data.lastTime,
+                        lastEmotion: response.data.lastEmotion,
+                        lastText: response.data.lastText,
+                        userStatus: response.data.userStatus
+                    }
+                )
+            }
+        )
+    }, [userIdx]);
+
 
     const handleSelect = (e) => {
-        setUser(e.currentTarget.value);
+        setUserIdx(e.currentTarget.value);
     }
 
+    const [anchorEl, setAnchorEl] = React.useState(false);
+    const open = Boolean(anchorEl);
+    const floatId = anchorEl ? 'addUser' : undefined;
+    const handleFabClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleFapClose = () => {
+        setAnchorEl(null);
+    };
+
     const renderViaType = () => {
-        if (data.isManager) {
+        if (userType === "manager") {
             return (
-                <Box>
-                    <Title>사용자 선택</Title>
-                    <RadioGroup onChange={handleSelect}>
-                        {data.names.map((name, idx) => (
-                            <FormControlLabel
-                                key={`userRadio${idx}`}
-                                value={name}
-                                label={name}
-                                control={<Radio/>}/>))
-                        }
-                    </RadioGroup>
-                </Box>
-            )
-        }
-        return (
-            <Grid container alignItems={'baseline'} spacing={2}>
-                <Grid item xs={12}>
-                    <Title>{data.name} 님의 보호자</Title>
+                <Grid item xs={12} md={6}>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}>
+                        <Box>
+                            <Title>사용자 선택</Title>
+                            <RadioGroup onChange={handleSelect}>
+                                {userNames.map((name, idx) => (
+                                    <FormControlLabel
+                                        key={`userRadio${idx}`}
+                                        value={idx}
+                                        label={name}
+                                        control={<Radio/>}/>))
+                                }
+                            </RadioGroup>
+                            <Fab color={'primary'} aria-label={floatId} variant={'extended'}
+                                 aria-describedby={floatId}
+                                 onClick={handleFabClick}
+                            >
+                                <AddIcon/>
+                                사용자 추가하기
+                            </Fab>
+                            <Popover
+                                id={floatId}
+                                open={open}
+                                anchorEl={anchorEl}
+                                onClose={handleFapClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'center',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                            >
+                                <AddUserPopup/>
+                            </Popover>
+                        </Box>
+                    </Paper>
                 </Grid>
-                {data.names.map((name, idx) => (
-                    <Grid item xs={12} sm={6} key={`userGrid${idx}`}>
-                        <Typography variant={'h6'}>{name}</Typography>
-                        <Typography>{data.tels[idx]}</Typography>
-                    </Grid>
-                ))}
-            </Grid>
-        );
+            );
+        }
     }
 
     return (
@@ -172,7 +159,7 @@ function DashboardContent() {
                 >
                     <Toolbar/>
                     <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
-                        <Grid container spacing={3}>
+                        <Grid container spacing={3} alignItems={'stretch'} justifyContent={'ceneter'}>
                             <Grid item xs={12} display={'block'}>
                                 <Paper
                                     sx={{
@@ -185,29 +172,29 @@ function DashboardContent() {
                                 >
                                     <Avatar
                                         sx={{width: '12vh', height: '12vh'}}
+                                        src={'pic.jpg'}
                                     />
                                     <Typography
                                         variant={'h4'}
                                         p={2}
                                         fontWeight={'bold'}
-                                    >환영합니다 {data.name}님!</Typography>
+                                    >환영합니다 {currentId}님!</Typography>
                                 </Paper>
                             </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 260
-                                    }}>
-                                    {renderViaType()}
+                            {renderViaType()}
+                            <Grid item xs={6}>
+                                <Paper sx={{p: 2, display: 'flex', flexDirection: 'column'}}>
+                                    <Orders
+                                        lastTime={userInfo.lastTime}
+                                        lastEmotion={userInfo.lastEmotion}
+                                        lastText={userInfo.lastText}
+                                    />
                                 </Paper>
                             </Grid>
                             {/* Chart */}
                             {/* Recent Emotions */}
-                            <Zoom in={user !== "Invalid"}>
-                                <Grid item xs={12} md={6}>
+                            <Zoom in={userIdx !== -1}>
+                                <Grid item xs={12}>
                                     <Paper
                                         sx={{
                                             p: 2,
@@ -217,19 +204,14 @@ function DashboardContent() {
                                         }}
                                     >
                                         <Emotion
-                                            user={user}
-                                            depressed={data.statistics.depressed}
-                                            notDepressed={data.statistics.notDepressed}
+                                            user={userNames[userIdx]}
+                                            depressed={userInfo.userStatus.depressed}
+                                            notDepressed={userInfo.userStatus.notDepressed}
                                         />
                                     </Paper>
                                 </Grid>
                             </Zoom>
                             {/* Recent Talk */}
-                            <Grid item xs={12}>
-                                <Paper sx={{p: 2, display: 'flex', flexDirection: 'column'}}>
-                                    <Orders/>
-                                </Paper>
-                            </Grid>
                         </Grid>
                     </Container>
                 </Box>

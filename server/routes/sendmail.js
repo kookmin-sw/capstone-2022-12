@@ -22,19 +22,20 @@ var router = express.Router();
 //     else { console.log("DB 연결 성공"); }
 // });
 
-// var db_config = {
-//     host: 'us-cdbr-east-05.cleardb.net',
-//     user: 'be2446026e1d94',
-//     password: 'a7902cb0',
-//     database: 'heroku_d4b1a4548f6a83d'
-// };
 var db_config = {
-    host: 'localhost',
-    port: '3306',
-    user: 'root',
-    password: 'cnj140535',
-    database: 'aid_db'
+    host: 'us-cdbr-east-05.cleardb.net',
+    user: 'be2446026e1d94',
+    password: 'a7902cb0',
+    database: 'heroku_d4b1a4548f6a83d'
 };
+
+// var db_config = {
+//     host: 'localhost',
+//     port: '3306',
+//     user: 'root',
+//     password: 'cnj140535',
+//     database: 'aid_db'
+// };
 
 var client;
 
