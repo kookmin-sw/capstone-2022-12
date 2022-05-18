@@ -77,7 +77,7 @@ export default function UserSignUp(props) {
                                     autoComplete="new-password"
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     autoComplete="given-name"
                                     name="u_name"

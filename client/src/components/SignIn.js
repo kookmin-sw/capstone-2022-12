@@ -15,20 +15,24 @@ import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {Link as RouterLink, useNavigate} from 'react-router-dom'
 import * as axios from 'axios';
+import {RadioGroup, Radio} from "@mui/material";
 
 
 const theme = createTheme();
 
 export default function SignIn() {
     const navigate = useNavigate();
-    const [chk, setChk] = React.useState('user');
+    const [userType, setUserType] = React.useState('user');
 
     const handleSwitch = (e) => {
         if (e.currentTarget.checked) {
-            setChk("user");
+            setUserType("user");
         } else {
-            setChk("manager");
+            setUserType("manager");
         }
+    }
+    const handleRadioChange = (event) => {
+        setUserType(event.currentTarget.value);
     }
 
     const handleSubmit = (event) => {
@@ -36,23 +40,25 @@ export default function SignIn() {
         const data = new FormData(event.currentTarget);
 
         const body = {
-            chk: chk,
+            chk: userType,
             id: data.get('id'),
             pw: data.get('pw'),
         }
 
-        axios.post("/login", body)
-        .then(response => {
-            const data = response.data;
-            console.log("로그인 서버 응답")
-            console.log(data);
-            navigate("/dashboard", {state:{
-                name: data.name,
-                chk: data.chk,
-                is_logined: data.is_logined,
-                serial: data.serial
-            }});
-        });
+        axios.post("https://kookmin-aid.herokuapp.com/login", body)
+            .then(response => {
+                const data = response.data;
+                console.log("로그인 서버 응답")
+                console.log(data);
+                navigate("/dashboard", {
+                    state: {
+                        name: data.name,
+                        chk: data.check,
+                        is_logined: data.is_logined,
+                        serial_number: data.serial_number
+                    }
+                });
+            });
     };
 
     return (
@@ -73,9 +79,17 @@ export default function SignIn() {
                         로그인
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
-                        <Switch
-                            onChange={handleSwitch}
-                        />
+                        <Box display={'flex'} width={1.0} justifyContent={'center'}>
+                            <RadioGroup
+                                row
+                                defaultValue={'user'}
+                                name={'userType'}
+                                onChange={handleRadioChange}
+                            >
+                                <FormControlLabel control={<Radio/>} label={'사용자'} value={'user'}/>
+                                <FormControlLabel control={<Radio/>} label={'보호자'} value={'manager'}/>
+                            </RadioGroup>
+                        </Box>
                         <TextField
                             margin="normal"
                             required

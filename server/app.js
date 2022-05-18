@@ -11,7 +11,7 @@ const decrypt = require('./functions/hashing.js').decrypt;
 const getYYMMDD = require('./functions/getTime.js').getYYMMDD;
 const getHHMMSS = require('./functions/getTime.js').getHHMMSS;
 const get2weeks = require('./functions/getTime.js').get2weeks;
-const FileStore = require('session-file-store')(session); 
+const FileStore = require('session-file-store')(session);
 const cookieParser = require('cookie-parser');
 const schedule = require('node-schedule');
 const sendMailRouter = require('./routes/sendmail');
@@ -22,11 +22,9 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
 
-function getSortedDate(date)
-{
+function getSortedDate(date) {
     keys = [];
-    for(key in date)
-    {
+    for (key in date) {
         keys.push(key);
     }
     keys.sort().reverse();
@@ -90,7 +88,6 @@ function handleDisconnect() {
 handleDisconnect();
 
 
-
 // 정적 파일 설정 (미들웨어) 3
 app.use(express.static(path.join(__dirname, '/public')));
 
@@ -99,7 +96,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 // 정제 (미들웨어) 5
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
 // 세션 (미들웨어) 6
 app.use(session({
@@ -141,44 +138,33 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
     console.log('회원가입 하는중')
     const body = req.body;
-
-    if (body.check == "user")
-    {
+    if (body.check === "user") {
         const serial = body.serial;
-        let u_id = body.u_id;
-        let u_pw = body.u_pw;
-        const u_name = body.u_name;
-        const u_age = body.u_age;
-        const u_address = body.u_address;
-        const u_number = body.u_number
-
+        let u_id = body.userId;
+        let u_pw = body.userPw;
+        const u_name = body.userName;
+        const u_age = body.userAge;
+        const u_address = body.userAddress;
+        const u_number = body.userTel
         u_id = encrypt(u_id);
         u_pw = encrypt(u_pw);
-        
         client.query('select Serial_Number from user where Serial_Number=?', [serial], (err, data) => {
-            if (data.length != 0)
-            {
+            if (data.length !== 0) {
                 console.log('중복된 시리얼 번호');
-                // res.send('<script>alert("회원가입 실패\n중복된 제품번호입니다.");</script>');
                 res.redirect('/login');
-            }
-            else
-            {
+            } else {
                 client.query('select * from user where ID=?', [u_id], (err, data) => {
-                    if (data.length == 0) {
+                    if (data.length === 0) {
                         console.log('회원가입 성공');
-        
                         // Json파일 생성
-                        const file_path = './Log/'+serial+'.json'
-                        let user_json = {[getYYMMDD()] : []};
+                        const file_path = './Log/' + serial + '.json'
+                        let user_json = {[getYYMMDD()]: []};
                         user_json = JSON.stringify(user_json);
                         fs.writeFileSync(file_path, user_json)
-        
                         // DB 삽입
                         client.query('insert into user(Serial_Number, ID, PW, Name, Age, Address, Number, Log_Path) values(?,?,?,?,?,?,?,?)', [
                             serial, u_id, u_pw, u_name, u_age, u_address, u_number, file_path
                         ]);
-        
                         res.redirect('/');
                     } else {
                         console.log('중복된 ID');
@@ -188,9 +174,7 @@ app.post('/register', (req, res) => {
                 });
             }
         });
-    }
-    else
-    {
+    } else {
         const serial = body.m_u_serial;
         let m_u_id = body.m_u_id;
         let m_u_pw = body.m_u_pw;
@@ -204,8 +188,7 @@ app.post('/register', (req, res) => {
                 // res.send('<script>alert("회원가입 실패\n등록되지 않은 사용자 입니다.");</script>');
                 res.redirect('/');
             } else {
-                if (m_u_id == data[0].ID && m_u_pw == data[0].PW && serial == data[0].Serial_Number)
-                {
+                if (m_u_id == data[0].ID && m_u_pw == data[0].PW && serial == data[0].Serial_Number) {
                     console.log('사용자 정보 확인 완료');
                     let m_id = body.m_id;
                     let m_pw = body.m_pw;
@@ -217,23 +200,18 @@ app.post('/register', (req, res) => {
                     m_id = encrypt(m_id);
                     m_pw = encrypt(m_pw);
                     client.query('select * from manager where ID=?', [m_id], (err, data) => {
-                        if (data.length == 0)
-                        {
+                        if (data.length == 0) {
                             console.log('회원가입 성공');
                             client.query('insert into manager(ID, PW, USER_Serial_Number, Name, Relationship, Email, Number) values(?,?,?,?,?,?,?)', [
                                 m_id, m_pw, serial, m_name, m_relation, m_email, m_number
                             ]);
-                        }
-                        else
-                        {
+                        } else {
                             console.log('중복된 ID');
                             // res.send('<script>alert("회원가입 실패\n중복된 ID입니다.");</script>');
                             res.redirect('/login');
                         }
                     });
-                }
-                else
-                {
+                } else {
                     console.log('잘못된 사용자 정보');
                     // res.send('<script>alert("회원가입 실패\n잘못된 사용자 정보입니다.");</script>');
                     res.redirect('/');
@@ -258,16 +236,13 @@ app.post('/login', (req, res) => {
 
     id = encrypt(id);
     pw = encrypt(pw);
-    
-    if (chk == 'user')
-    {
+
+    if (chk == 'user') {
         client.query('select Serial_Number, ID, PW, Name from user where ID=?', [id], (err, data) => {
-            if (data.length == 0)
-            {
+            if (data.length == 0) {
                 console.log('등록된 정보가 없습니다.');
                 res.render('login', {});
-            }
-            else if (id == data[0].ID && pw == data[0].PW) {
+            } else if (id == data[0].ID && pw == data[0].PW) {
                 console.log('로그인 성공');
                 // 세션에 추가
                 req.session.is_logined = true;
@@ -286,16 +261,12 @@ app.post('/login', (req, res) => {
                 res.render('login', {});
             }
         });
-    }
-    else 
-    {
+    } else {
         client.query('select USER_Serial_Number, ID, PW, Name, Email, Number from manager where ID=?', [id], (err, data) => {
-            if (data.length == 0)
-            {
+            if (data.length == 0) {
                 console.log('등록된 정보가 없습니다.');
                 res.render('login', {});
-            }
-            else if (id == data[0].ID && pw == data[0].PW) {
+            } else if (id == data[0].ID && pw == data[0].PW) {
                 console.log('로그인 성공');
                 // 세션에 추가
                 req.session.is_logined = true;
@@ -330,25 +301,25 @@ app.get('/logout', (req, res) => {
 
 // 통계자료 보기
 app.get('/info', (req, res) => {
-    try{
+    try {
         console.log('통계자료 확인하기');
         console.log(req.session);
-        const path = "./Log/"+req.session.serial_number+".json";
+        const path = "./Log/" + req.session.serial_number + ".json";
 
         const HHMMSS = 0;
         const EMOTION = 1;
         const TEXT = 2;
-        
+
         const user_data = JSON.parse(fs.readFileSync(path).toString());
         const weeks = get2weeks();
-        let user_emotion = {"depressed":0, "not_depressed":0};
+        let user_emotion = {"depressed": 0, "not_depressed": 0};
 
-        for(var d=0; d<weeks.length; d++)
-        {   
+        for (var d = 0; d < weeks.length; d++) {
             day = weeks[d];
-            if (user_data[day] == undefined) {continue;}
-            for (var i=0; i<user_data[day].length; i++)
-            {   
+            if (user_data[day] == undefined) {
+                continue;
+            }
+            for (var i = 0; i < user_data[day].length; i++) {
                 user_emotion[user_data[day][i][EMOTION]] += 1
             }
         }
@@ -356,7 +327,7 @@ app.get('/info', (req, res) => {
         keys = getSortedDate(user_data);
 
         let last = user_data[keys[0]].at(-1);
-        const last_time = keys[0]+" "+last[HHMMSS];
+        const last_time = keys[0] + " " + last[HHMMSS];
         const last_emotion = last[EMOTION];
         const last_text = last[TEXT];
 
@@ -369,8 +340,7 @@ app.get('/info', (req, res) => {
             user_emotion: last_emotion,
             user_text: last_text
         });
-    }
-    catch (err) {
+    } catch (err) {
         console.log('error occured in data statistics page');
         res.write("<script>alert('there is no data')</script>");
         res.write("<script>window.location=\"/\"</script>");
@@ -387,7 +357,7 @@ app.post('/info', (req, res) => {
 //     console.log('3000 port running...');
 // });
 
-app.listen(process.env.PORT || 80, function(){
+app.listen(process.env.PORT || 80, function () {
     console.log('port running...');
     // 매주 일요일마다 메일 대상자에게 메일전송
     schedule.scheduleJob('* * * * * 0', function () {
@@ -408,12 +378,14 @@ app.listen(process.env.PORT || 80, function(){
                 const TEXT = 2;
                 const user_data = JSON.parse(fs.readFileSync(path).toString());
                 const weeks = get2weeks();
-                let user_emotion = { "depressed": 0, "not_depressed": 0 };
+                let user_emotion = {"depressed": 0, "not_depressed": 0};
                 let user_text = [];
                 let cnt = 0;
                 for (var d = 0; d < weeks.length; d++) {
                     day = weeks[d];
-                    if (user_data[day] == undefined) { continue; }
+                    if (user_data[day] == undefined) {
+                        continue;
+                    }
                     for (var i = 0; i < user_data[day].length; i++) {
                         user_emotion[user_data[day][i][EMOTION]] += 1;
                         if (cnt < 10) {
@@ -430,11 +402,10 @@ app.listen(process.env.PORT || 80, function(){
                     let status;
                     if (dep > 75) {
                         status = "매우 위험";
-                    }
-                    else {
+                    } else {
                         status = "위험";
                     }
-                    
+
                     let transporter = nodemailer.createTransport({
                         service: 'gmail',
                         host: 'smtp.gmail.com',
@@ -452,8 +423,15 @@ app.listen(process.env.PORT || 80, function(){
                             let user_name = JSON.parse(JSON.stringify(name[0]))['Name'];
                             // console.log(user_name);
                             let html_content;
-                            ejs.renderFile('./views/email.ejs', { user_name: user_name, dep:dep, status:status, user_text:user_text, }, function (err, data) {
-                                if (err) { console.log(err) }
+                            ejs.renderFile('./views/email.ejs', {
+                                user_name: user_name,
+                                dep: dep,
+                                status: status,
+                                user_text: user_text,
+                            }, function (err, data) {
+                                if (err) {
+                                    console.log(err)
+                                }
                                 html_content = data;
                             });
 
@@ -468,8 +446,7 @@ app.listen(process.env.PORT || 80, function(){
                             transporter.sendMail(mailOptions, function (error, info) {
                                 if (error) {
                                     console.log(error);
-                                }
-                                else {
+                                } else {
                                     console.log('Email sent: ' + info.response);
                                 }
                             });
@@ -478,8 +455,7 @@ app.listen(process.env.PORT || 80, function(){
                 }
 
             }
-        }
-        catch (err) {
+        } catch (err) {
             console.log('error occured in auto sending message');
             console.log(err);
         }

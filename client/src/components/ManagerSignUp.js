@@ -87,7 +87,7 @@ export default function ManagerSignUp(props) {
                                         autoComplete="new-password"
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12}>
                                     <TextField
                                         autoComplete="name"
                                         name="m_name"

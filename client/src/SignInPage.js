@@ -19,13 +19,12 @@ function SignInPage({history}) {
         >
             <Box
                 sx={{
-                    width: '30vw',
-                    height: '50vh',
                     borderRadius:12,
                     boxShadow:6,
                     alignItems: 'center',
                     justifyContent:'center',
-                    display:'block',
+                    display:'flex',
+                    flexDirection:'column',
                     backgroundColor:'white',
                     p:8
                 }}

@@ -6,20 +6,15 @@ function preventDefault(event) {
     event.preventDefault();
 }
 
-export default function Emotion(props) {
-    const user_info = props.userInfo;
-    console.log("차트에 들어온 데이터")
-    console.log(props);
-    
-
+export default function Emotion({user, depressed, notDepressed}) {
     const data = [
         {
             "name": "우울",
-            "value": user_info.depressed,
+            "value": depressed,
         },
         {
             "name": "우울하지 않음",
-            "value": user_info.not_depressed,
+            "value": notDepressed,
         }
     ]
 
@@ -47,7 +42,7 @@ export default function Emotion(props) {
 
     return (
         <React.Fragment>
-            <Title>최근 2주간 감정 상태</Title>
+            <Title>{user} 님의 최근 2주간 감정 상태</Title>
             <ResponsiveContainer>
                 <PieChart width={730} height={250}>
                     <Pie
