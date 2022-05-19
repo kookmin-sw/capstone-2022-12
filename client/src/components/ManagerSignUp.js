@@ -36,7 +36,7 @@ export default function ManagerSignUp() {
 
         }
 
-        axios.post('http://localhost:80/register', body)
+        axios.post('/register', body)
             .then(response => {
                 if (response.data.registerSuccess) {
                     alert("회원가입이 정상적으로 완료되었습니다");

@@ -39,7 +39,7 @@ export default function SignIn() {
         console.log("request to server with");
         console.log(body);
 
-        await axios.post("http://localhost:80/login", body)
+        await axios.post("/login", body)
             .then(response => {
                 console.log("response from server with")
                 const data = response.data;
@@ -107,10 +107,6 @@ export default function SignIn() {
                             type="password"
                             id="pw"
                             autoComplete="current-password"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
-                            label="아이디 기억하기"
                         />
                         <Button
                             type="submit"

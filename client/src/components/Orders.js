@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,7 +7,20 @@ import TableRow from '@mui/material/TableRow';
 import Title from './Title';
 import Box from "@mui/material/Box";
 
-export default function Orders({lastTime, lastEmotion, lastText}) {
+function renderItem(lastTimes, lastEmotions, lastTexts) {
+    const items = lastTimes.map((item, idx) => 
+        <TableRow key={`row${idx}`}>
+            <TableCell key={`cell0${idx}`}>{item}</TableCell>
+            <TableCell key={`cell1${idx}`}>{lastTexts[idx]}</TableCell>
+            <TableCell key={`cell2${idx}`}>{lastEmotions[idx]}</TableCell>
+        </TableRow>
+    );
+    return (
+        <TableBody>{items}</TableBody>
+    );
+}
+
+export default function Orders({lastTimes, lastEmotions, lastTexts}) {
     return (
         <Box>
             <Title>최근 대화 내역</Title>
@@ -20,13 +32,7 @@ export default function Orders({lastTime, lastEmotion, lastText}) {
                         <TableCell>분류 결과</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
-                    <TableRow>
-                        <TableCell>{lastTime}</TableCell>
-                        <TableCell>{lastText}</TableCell>
-                        <TableCell>{lastEmotion}</TableCell>
-                    </TableRow>
-                </TableBody>
+                {renderItem(lastTimes, lastEmotions, lastTexts)}
             </Table>
         </Box>
     );

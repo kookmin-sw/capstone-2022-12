@@ -78,7 +78,7 @@ handleDisconnect();
 
 // 정적 파일 설정 (미들웨어) 3
 app.use(express.static(path.join(__dirname, '/public')));
-app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, './client/build')));
 
 // // ejs 설정 4
 // app.set('views', __dirname + '/views');
@@ -105,7 +105,7 @@ app.use('/', sendMailRouterManager);
 // app.use('/', userInfoPost)
 
 app.get("/", function (res, req) {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'))
+    res.sendFile(path.join(__dirname, './client/build/index.html'))
 })
 
 app.post('/talk', (req, res) => {
@@ -278,6 +278,13 @@ app.post('/login', async (req, res) => {
                 res.send({loginSuccess: false});
             } else if (encryptedId === data[0].ID && encryptedPw === data[0].PW) {
                 console.log(`userID ${id} login correctly.`)
+                // 세션에 추가
+                req.session.is_logined = true;
+                req.session.serial_number = data[0].Serial_Number;
+                req.session.check = userType;
+                req.session.name = data[0].Name;
+                req.session.save();
+
                 res.send({
                     loginSuccess: true,
                     id: id,
@@ -285,12 +292,7 @@ app.post('/login', async (req, res) => {
                     userNames: [data[0].Name],
                     userTels: [data[0].Number]
                 });
-                // 세션에 추가
-                req.session.is_logined = true;
-                req.session.serial_number = data[0].Serial_Number;
-                req.session.check = userType;
-                req.session.name = data[0].Name;
-                req.session.save();
+                
             } else {
                 console.log(`userID ${id}: not correct id or password.`);
                 res.send({loginSuccess: false});
@@ -312,6 +314,11 @@ app.post('/login', async (req, res) => {
                         userNames.push(userDatum.Name);
                         userTels.push(userDatum.Number);
                     }
+                    req.session.is_logined = true;
+                    req.session.user_info = userData;
+                    req.session.check = 'manager';
+                    req.session.name = data[0].Name;
+                    req.session.save();
 
                     res.send({
                         loginSuccess: true,
@@ -320,12 +327,6 @@ app.post('/login', async (req, res) => {
                         userNames: userNames,
                         userTels: userTels,
                     })
-
-                    req.session.is_logined = true;
-                    req.session.user_info = userData;
-                    req.session.check = 'manager';
-                    req.session.name = data[0].Name;
-                    req.session.save();
                 } else {
                     console.log(`managerID ${id}: not correct id or password.`);
                     res.send({loginSuccess: false});
@@ -340,31 +341,35 @@ app.post('/add_user', (req, res) => {
     console.log(`trying to add user with`);
     const body = req.body;
     console.log(body);
-    if (body.check === "user") {
-        const serial = body.serial;
-        let u_id = body.u_id;
-        let u_pw = body.u_pw;
-        let m_id = body.currentId;
-        u_id = encrypt(u_id);
-        u_pw = encrypt(u_pw);
-        m_id = encrypt(m_id);
-        client.query('select Serial_Number, ID, PW, Name from user where Serial_Number=?', [serial], (err, data) => {
-            try {
-                if (data.length === 0) {
-                    console.log(`Invalid user information`);
-                    res.send({registerSuccess: false})
-                }
-                if (u_id === data[0].ID && u_pw === data[0].PW) {
-                    console.log(`appending user to manager ${m_id}`);
-                    client.query('insert into manager_has_user(manager_ID, user_Serial_Number) values(?,?)', [m_id, serial]);
-                    res.send({registerSuccess: true})
-                }
-            } catch (err) {
-                console.log('no information');
-                res.send({registerSuccess: false})
+    const serial = body.serial;
+    let u_id = body.u_id;
+    let u_pw = body.u_pw;
+    let m_id = body.currentId;
+    u_id = encrypt(u_id);
+    u_pw = encrypt(u_pw);
+    m_id = encrypt(m_id);
+    console.log('add user to DB start');
+    client.query('select Serial_Number, ID, PW, Name from user where Serial_Number=?', [serial], (err, data) => {
+        try {
+            if (err) throw err;
+            if (data.length === 0) {
+                console.log(`Invalid user information`);
+                res.send({ registerSuccess: false })
             }
-        });
-    }
+            if (u_id === data[0].ID && u_pw === data[0].PW) {
+                console.log(`appending user to manager ${m_id}`);
+                client.query('insert into manager_has_user(manager_ID, user_Serial_Number) values(?,?)', [m_id, serial]);
+                res.send({ registerSuccess: true })
+            }
+        } catch (err) {
+            console.log('no information or duplicate user');
+            // res.send({ registerSuccess: false })
+        }
+    });
+    console.log('add user end');
+    // if (body.check === "user") {
+        
+    // }
 });
 
 
@@ -383,27 +388,51 @@ app.get('/logout', (req, res) => {
 app.post('/info', (req, res) => {
     const body = req.body;
     client.query('select date, emotion, talk from log where date BETWEEN DATE_ADD(DATE_ADD(NOW(), INTERVAL 9 HOUR),INTERVAL -2 WEEK ) AND DATE_ADD(NOW(), INTERVAL 9 HOUR) AND user_Serial_Number=? ORDER BY date', [body.serial], (err, data) => {
+        if (err) {
+            throw err;
+        }
         try {
-            console.log(`check statistics of ${body.serial}`);
-            const userStatus = {"depressed": 0, "notDepressed": 0};
-            for (let i = 0; i < data.length; i++) {
-                userStatus[data[i]['emotion']] += 1
-            }
-            const last = data[data.length - 1];
-            const lastTime = last['date'];
-            const lastEmotion = last['emotion'];
-            const lastText = last['talk'];
-            res.send(
-                {
-                    lastTime,
-                    lastEmotion,
-                    lastText,
-                    userStatus,
+            if (data.length != 0) {
+                console.log(`check statistics of ${body.serial}! there is no data`);
+                const userStatus = { "depressed": 0, "notDepressed": 0 };
+
+                const lastTime = [];
+                const lastEmotion = [];
+                const lastText = [];
+                for (let i = 0; i < data.length; i++) {
+                    userStatus[data[i]['emotion']] += 1
+                    if (data.length - i < 5){
+                        lastTime.push(data[i]['date']);
+                        lastEmotion.push(data[i]['emotion']);
+                        lastText.push(data[i]['talk']);
+                    }
                 }
-            )
-        } catch (err) {
+                res.send(
+                    {
+                        lastTime,
+                        lastEmotion,
+                        lastText,
+                        userStatus,
+                    }
+                )
+            }
+            else {
+                res.send(
+                    {
+                        lastTime: ["1900-01-01"],
+                        lastEmotion: ["undefined"],
+                        lastText : ["사용자 정보가 없습니다."],
+                        userStatus : {
+                            'depressed' : 0,
+                            'notDepressed' : 0
+                        },
+                    }
+                )
+            }
+            
+        } catch (err1) {
             console.log(`error occurred in data statistics of ${body.serial}`);
-            console.log(err)
+            console.log(err1)
         }
     });
 });
@@ -454,40 +483,42 @@ app.listen(process.env.PORT || 80, function () {
                             }
                         });
                         client.query('select M.Email, U.Name from manager_has_user MU JOIN manager M ON  MU.manager_ID = M.ID JOIN user u ON MU.user_Serial_Number = U.Serial_Number where MU.user_Serial_Number=?', [serial], (err, log) => {
-
-                            try {
-                                let email = log[0]['Email'];
-                                let user_name = log[0]['Name'];
-                                let html_content;
-                                ejs.renderFile('./views/email.ejs', {
-                                    user_name: user_name,
-                                    dep: dep,
-                                    status: status,
-                                    user_text: user_text,
-                                }, function (err, data) {
-                                    if (err) {
-                                        console.log(err)
-                                    }
-                                    html_content = data;
-                                });
-                                let mailOptions = {
-                                    from: 'kookminaid17@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
-                                    to: email,                     // 수신 메일 주소
-                                    subject: 'AID 우울증 판단 결과',   // 제목
-                                    html: html_content,
-                                    // text: "2주간의 우울증 판단 결과 우울증 위험도가 높습니다", // 내용
-                                };
-                                transporter.sendMail(mailOptions, function (error, info) {
-                                    if (error) {
-                                        console.log(error);
-                                    } else {
-                                        console.log('Email sent: ' + info.response);
-                                    }
-                                });
-                            } catch (err) {
-                                console.log('the manager of the user may not be exist');
-                                console.log(err);
+                            for (var i=0; i < log.length; i++) {
+                                try {
+                                    let email = log[i]['Email'];
+                                    let user_name = log[i]['Name'];
+                                    let html_content;
+                                    ejs.renderFile('./views/email.ejs', {
+                                        user_name: user_name,
+                                        dep: dep,
+                                        status: status,
+                                        user_text: user_text,
+                                    }, function (err, data) {
+                                        if (err) {
+                                            console.log(err)
+                                        }
+                                        html_content = data;
+                                    });
+                                    let mailOptions = {
+                                        from: 'kookminaid17@gmail.com',    // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+                                        to: email,                     // 수신 메일 주소
+                                        subject: 'AID 우울증 판단 결과',   // 제목
+                                        html: html_content,
+                                        // text: "2주간의 우울증 판단 결과 우울증 위험도가 높습니다", // 내용
+                                    };
+                                    transporter.sendMail(mailOptions, function (error, info) {
+                                        if (error) {
+                                            console.log(error);
+                                        } else {
+                                            console.log('Email sent: ' + info.response);
+                                        }
+                                    });
+                                } catch (err) {
+                                    console.log('the manager of the user may not be exist');
+                                    console.log(err);
+                                }
                             }
+                            
                         });
                     }
                 });

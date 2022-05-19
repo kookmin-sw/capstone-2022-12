@@ -34,9 +34,9 @@ function DashboardContent() {
 
     const [userInfo, setUserInfo] = useState(
         {
-            lastTime: 0,
-            lastEmotion: '',
-            lastText: '',
+            lastTimes: [],
+            lastEmotions: [],
+            lastTexts: [],
             userStatus: {
                 depressed: 0,
                 notDepressed: 0
@@ -44,7 +44,7 @@ function DashboardContent() {
         }
     );
 
-    const [userIdx, setUserIdx] = useState(-1);
+    const [userIdx, setUserIdx] = useState(userType === 'user'? 0 : -1);
 
 
     useEffect(async () => {
@@ -59,14 +59,14 @@ function DashboardContent() {
 
         console.log(`request user serial ${body.serial} to server`);
         console.log(body);
-        await axios.post("http://localhost:80/info", body).then(
+        await axios.post("/info", body).then(
             response => {
                 console.log(`received ${userSerials[userIdx]} info from server`);
                 console.log(response.data);
                 setUserInfo({
-                        lastTime: response.data.lastTime,
-                        lastEmotion: response.data.lastEmotion,
-                        lastText: response.data.lastText,
+                        lastTimes: response.data.lastTime,
+                        lastEmotions: response.data.lastEmotion,
+                        lastTexts: response.data.lastText,
                         userStatus: response.data.userStatus
                     }
                 )
@@ -132,7 +132,7 @@ function DashboardContent() {
                                     horizontal: 'center',
                                 }}
                             >
-                                <AddUserPopup/>
+                                <AddUserPopup currentId={currentId}/>
                             </Popover>
                         </Box>
                     </Paper>
@@ -182,19 +182,8 @@ function DashboardContent() {
                                 </Paper>
                             </Grid>
                             {renderViaType()}
-                            <Grid item xs={6}>
-                                <Paper sx={{p: 2, display: 'flex', flexDirection: 'column'}}>
-                                    <Orders
-                                        lastTime={userInfo.lastTime}
-                                        lastEmotion={userInfo.lastEmotion}
-                                        lastText={userInfo.lastText}
-                                    />
-                                </Paper>
-                            </Grid>
-                            {/* Chart */}
-                            {/* Recent Emotions */}
                             <Zoom in={userIdx !== -1}>
-                                <Grid item xs={12}>
+                                <Grid item xs={6}>
                                     <Paper
                                         sx={{
                                             p: 2,
@@ -211,6 +200,15 @@ function DashboardContent() {
                                     </Paper>
                                 </Grid>
                             </Zoom>
+                            <Grid item xs={12}>
+                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                                    <Orders
+                                        lastTimes={userInfo.lastTimes}
+                                        lastEmotions={userInfo.lastEmotions}
+                                        lastTexts={userInfo.lastTexts}
+                                    />
+                                </Paper>
+                            </Grid>
                             {/* Recent Talk */}
                         </Grid>
                     </Container>
