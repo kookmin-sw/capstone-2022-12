@@ -241,7 +241,8 @@ app.post('/register', (req, res) => {
                     m_pw = encrypt(m_pw);
                     client.query('select * from manager where ID=?', [m_id], (err, data) => {
                         if (data.length === 0) {
-                            console.log(`manager ${m_id} registered`);
+                            console.log(`manager ${m_id} registered with`);
+                            console.log(`m_id ${m_id} u_id ${m_u_id} relation ${m_relation}`)
                             client.query('insert into manager(ID, PW, Name, Relationship, Email, Number) values(?,?,?,?,?,?)', [
                                 m_id, m_pw, m_name, m_relation, m_email, m_number
                             ]);

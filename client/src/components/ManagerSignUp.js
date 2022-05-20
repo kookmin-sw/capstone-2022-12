@@ -18,6 +18,7 @@ const theme = createTheme();
 
 export default function ManagerSignUp() {
     const navigate = useNavigate();
+    const [relation, setRelation] = React.useState('가족');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -33,7 +34,7 @@ export default function ManagerSignUp() {
             m_relation: data.get('m_relation'),
             m_email: data.get('m_email'),
             m_number: data.get('m_number'),
-
+            relation: relation
         }
 
         axios.post('/register', body)
@@ -47,7 +48,6 @@ export default function ManagerSignUp() {
             });
     };
 
-    const [relation, setRelation] = React.useState('가족');
 
     const handleChange = (event) => {
         setRelation(event.target.value);
@@ -110,6 +110,7 @@ export default function ManagerSignUp() {
                                         <Select
                                             labelId="relation"
                                             id="m_relation"
+                                            name='m_relation'
                                             value={relation}
                                             label="사용자와의 관계"
                                             onChange={handleChange}
