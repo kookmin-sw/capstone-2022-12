@@ -395,14 +395,14 @@ app.post('/info', (req, res) => {
         try {
             if (data.length != 0) {
                 console.log(`check statistics of ${body.serial}! there is no data`);
-                const userStatus = { "depressed": 0, "notDepressed": 0 };
+                const userStatus = { "depressed": 0, "not_depressed": 0 };
 
                 const lastTime = [];
                 const lastEmotion = [];
                 const lastText = [];
                 for (let i = 0; i < data.length; i++) {
                     userStatus[data[i]['emotion']] += 1
-                    if (data.length - i < 5){
+                    if (data.length - i < 8){
                         lastTime.push(data[i]['date']);
                         lastEmotion.push(data[i]['emotion']);
                         lastText.push(data[i]['talk']);
@@ -425,7 +425,7 @@ app.post('/info', (req, res) => {
                         lastText : ["사용자 정보가 없습니다."],
                         userStatus : {
                             'depressed' : 0,
-                            'notDepressed' : 0
+                            'not_depressed' : 0
                         },
                     }
                 )

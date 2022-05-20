@@ -39,7 +39,7 @@ function DashboardContent() {
             lastTexts: [],
             userStatus: {
                 depressed: 0,
-                notDepressed: 0
+                not_depressed: 0
             }
         }
     );
@@ -195,7 +195,7 @@ function DashboardContent() {
                                         <Emotion
                                             user={userNames[userIdx]}
                                             depressed={userInfo.userStatus.depressed}
-                                            notDepressed={userInfo.userStatus.notDepressed}
+                                            notDepressed={userInfo.userStatus.not_depressed}
                                         />
                                     </Paper>
                                 </Grid>
