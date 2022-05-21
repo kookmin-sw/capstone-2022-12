@@ -23,7 +23,7 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
   + [![썸네일](https://user-images.githubusercontent.com/28581473/169649936-afff1f24-efbb-4c48-8036-4ff3d5f2d208.png)](https://www.youtube.com/watch?v=n1cOOWHSAmo)
 
 ### 3. 시스템 구성
-![KakaoTalk_20220404_123604826](https://user-images.githubusercontent.com/28241676/161470384-fdd1ca6d-78a4-44cb-ada1-420356924ffc.png)<br>
+![시스템구성](https://user-images.githubusercontent.com/28581473/169650197-55d2182f-3661-4942-99c6-1aeaae463b01.png)<br>
 사용자의 음성을 스피커를 통해 입력받습니다. 음성은 텍스트로 변환되어 AI서버에 전송됩니다. AI 서버에서는 텍스트의 감정을 분석하고 이에 맞는 응답을 return 합니다. return 받은 응답은 스피커에서 음성합성을 통해 출력됩니다.<br>
 AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 특정 Threshold 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
 
@@ -32,6 +32,15 @@ AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버�
 ![감정분류 모델 Inference](https://user-images.githubusercontent.com/28581473/169650042-13de308f-d240-4fb1-a186-5c1bcbf12d7f.gif)
 ##### 문장생성 모델(SBERT)
 ![문장생성 모델 inference](https://user-images.githubusercontent.com/28581473/169650083-cc2d33bd-5bb1-4788-811c-7c203328832a.gif)
+
+#### 로그인 페이지
+![로그인](https://user-images.githubusercontent.com/28581473/169650216-d177308a-d0ca-49bb-8dca-75db76d47037.png)
+
+#### 통계 페이지
+![통계](https://user-images.githubusercontent.com/28581473/169650232-a36efe93-dee7-48c3-ac0f-c3da6775f959.png)
+
+#### 알림 메일 예시
+![메일](https://user-images.githubusercontent.com/28581473/169650268-2df7fdd5-5158-4b07-b19f-02d2e0c85287.png)
 
 ### 4. 팀 소개
 
