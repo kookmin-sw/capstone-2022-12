@@ -28,10 +28,10 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 특정 Threshold 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
 
 #### 모델 Inference
-##### 감정분류 모델(BERT)
-![감정분류 모델 Inference](https://user-images.githubusercontent.com/28241676/161470389-2b143c87-e07d-4395-8484-8b5d584d2af5.gif)
-##### 문장생성 모델(GPT-2)
-![문장생성 모델 inference](https://user-images.githubusercontent.com/28241676/161470390-218ab7a2-354c-4303-a0c4-a971fb97e8af.gif)
+##### 감정분류 모델(Fusion)
+![감정분류 모델 Inference](https://user-images.githubusercontent.com/28581473/169650042-13de308f-d240-4fb1-a186-5c1bcbf12d7f.gif)
+##### 문장생성 모델(SBERT)
+![문장생성 모델 inference](https://user-images.githubusercontent.com/28581473/169650083-cc2d33bd-5bb1-4788-811c-7c203328832a.gif)
 
 ### 4. 팀 소개
 
