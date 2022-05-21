@@ -68,11 +68,3 @@ AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버�
 ### 5. 사용법
 
 소스코드제출시 설치법이나 사용법을 작성하세요.
-
-### 6. 기타
-
-추가적인 내용은 자유롭게 작성하세요.
-
-### Support or Contact
-
-readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
