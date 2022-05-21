@@ -18,7 +18,7 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 [![AID 소개영상](https://user-images.githubusercontent.com/28241676/169647658-7b90d7d7-db92-49a3-8969-9ad81a0b9b78.png)](https://youtu.be/Tgn2YCNgPzI)
 
 ### 3. 시연영상
-[![AID 시연영상](https://user-images.githubusercontent.com/28241676/161486795-f2f56b56-9951-4642-97c2-e13fcf37c5c0.png)](https://youtu.be/n1cOOWHSAmo)
+[![AID 시연영상](https://user-images.githubusercontent.com/28241676/161486795-f2f56b56-9951-4642-97c2-e13fcf37c5c0.png)](https://youtu.be/rp1SJ38i_wI)
 
 ### 4. 문서
 + 중간 보고서
