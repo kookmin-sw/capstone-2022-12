@@ -1,3 +1,6 @@
+### 0. Github Page
+https://kookmin-sw.github.io/capstone-2022-12/
+
 ### 1. 프로젝트 소개
 
 #### 프로젝트 이름: `AID`<br>
