@@ -20,7 +20,7 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 + 중간 보고서
   + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)
 + 시연 영상
-  + 추가 예정
+  + [![썸네일](https://user-images.githubusercontent.com/28581473/169649936-afff1f24-efbb-4c48-8036-4ff3d5f2d208.png)](https://www.youtube.com/watch?v=n1cOOWHSAmo)
 
 ### 3. 시스템 구성
 ![KakaoTalk_20220404_123604826](https://user-images.githubusercontent.com/28241676/161470384-fdd1ca6d-78a4-44cb-ada1-420356924ffc.png)<br>
