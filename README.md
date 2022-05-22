@@ -1,6 +1,3 @@
-### 0. Github Page
-https://kookmin-sw.github.io/capstone-2022-12/
-
 ### 1. 프로젝트 소개
 
 #### 프로젝트 이름: `AID`<br>
@@ -18,17 +15,25 @@ Depression is one of the most well-treated psychiatric diseases if detected earl
 Therefore, **We introduce services that monitor the emotional state of single-person households (especially the elderly living alone) to help detect and treat depression early.**
 
 ### 2. 소개 영상
-[![소개영상thum](https://user-images.githubusercontent.com/28581473/169649749-3c6eb839-66e2-4fd5-9e34-4b6f70adb38b.png)](https://www.youtube.com/watch?v=Tgn2YCNgPzI)
+[![AID 소개영상](https://user-images.githubusercontent.com/28241676/161486795-f2f56b56-9951-4642-97c2-e13fcf37c5c0.png)](https://youtu.be/Tgn2YCNgPzI)
 
+### 3. 시연영상
+[![AID 시연영상](https://user-images.githubusercontent.com/28241676/169647658-7b90d7d7-db92-49a3-8969-9ad81a0b9b78.png)](https://youtu.be/rp1SJ38i_wI)
+
+### 4. 문서
 + 중간 보고서
   + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)
-+ 시연 영상
-  [![썸네일](https://user-images.githubusercontent.com/28581473/169649936-afff1f24-efbb-4c48-8036-4ff3d5f2d208.png)](https://youtu.be/rp1SJ38i_wI)
-+ 중간 보고서
++ 중간 발표자료
+  + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.pdf)
++ 결과 보고서
+  + 추가 예정
++ 최종 발표자료
+  + 추가 예정
++ 최종 보고서
   + 추가 예정
 
-### 3. 시스템 구성
-![시스템구성](https://user-images.githubusercontent.com/28581473/169650197-55d2182f-3661-4942-99c6-1aeaae463b01.png)<br>
+### 5. 시스템 구성
+![KakaoTalk_20220404_123604826](https://user-images.githubusercontent.com/28241676/161470384-fdd1ca6d-78a4-44cb-ada1-420356924ffc.png)<br>
 사용자의 음성을 스피커를 통해 입력받습니다. 음성은 텍스트로 변환되어 AI서버에 전송됩니다. AI 서버에서는 텍스트의 감정을 분석하고 이에 맞는 응답을 return 합니다. return 받은 응답은 스피커에서 음성합성을 통해 출력됩니다.<br>
 AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 특정 Threshold 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
 
@@ -57,8 +62,13 @@ AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버�
 #### 알림 메일 예시
 ![메일](https://user-images.githubusercontent.com/28581473/169650268-2df7fdd5-5158-4b07-b19f-02d2e0c85287.png)
 
-### 4. 팀 소개
 
+
+### 6. 로드맵
+현재(2022-04-08) 진행사항입니다.
+![KakaoTalk_20220404_123625753](https://user-images.githubusercontent.com/28241676/161553779-f6d7ea59-85c3-43f0-9d5f-6ba8d7f6746d.png)
+
+### 7. 팀 소개
 * 장민혁
   * Role : Backend and Board
   * Student ID : 1691
@@ -80,6 +90,14 @@ AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버�
   * E-Mail : piter0208@kookmin.ac.kr
   * Github : https://github.com/KyominHwang
 
-### 5. 사용법
+### 8. 사용법
 
 소스코드제출시 설치법이나 사용법을 작성하세요.
+
+### 9. 기타
+
+추가적인 내용은 자유롭게 작성하세요.
+
+### Support or Contact
+
+readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
