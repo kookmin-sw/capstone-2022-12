@@ -14,10 +14,10 @@ Depression is one of the most well-treated psychiatric diseases if detected earl
 Therefore, **We introduce services that monitor the emotional state of single-person households (especially the elderly living alone) to help detect and treat depression early.**
 
 ### 2. 소개 영상
-[![AID 소개영상](https://user-images.githubusercontent.com/28241676/169680861-6929454d-d2fa-47dd-bc47-f659b3006390.png)](https://youtu.be/Tgn2YCNgPzI)
+[![AID 소개영상](https://user-images.githubusercontent.com/28241676/169681318-e2c577c7-c4c1-4c59-acd0-f54c2c219bdc.png)](https://youtu.be/Tgn2YCNgPzI)
 
 ### 3. 시연영상
-[![AID 시연영상](https://user-images.githubusercontent.com/28241676/169647658-7b90d7d7-db92-49a3-8969-9ad81a0b9b78.png)](https://youtu.be/rp1SJ38i_wI)
+[![AID 시연영상](https://user-images.githubusercontent.com/28241676/169681332-17731554-500f-496a-b6a4-01fad979c54e.png)](https://youtu.be/rp1SJ38i_wI)
 
 ### 4. 문서
 + 중간 보고서
