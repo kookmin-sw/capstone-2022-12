@@ -53,13 +53,16 @@ AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버�
   + ![문장출력 모델 성능 테이블](https://user-images.githubusercontent.com/28241676/169647356-942a6527-2b10-42cc-adee-2871c285e057.png)
 
 #### 로그인 페이지
-![로그인](https://user-images.githubusercontent.com/28581473/169650216-d177308a-d0ca-49bb-8dca-75db76d47037.png)
+![로그인](https://user-images.githubusercontent.com/28241676/169687469-2dac97bf-cce0-4c90-a454-e03f4a671f7b.png)
+
 
 #### 통계 페이지
-![통계](https://user-images.githubusercontent.com/28581473/169650232-a36efe93-dee7-48c3-ac0f-c3da6775f959.png)
+![통계](https://user-images.githubusercontent.com/28241676/169687481-1ff782fe-7615-4fd3-8c25-a76bc404e2b0.png)
+
 
 #### 알림 메일 예시
-![메일](https://user-images.githubusercontent.com/28581473/169650268-2df7fdd5-5158-4b07-b19f-02d2e0c85287.png)
+![메일](https://user-images.githubusercontent.com/28241676/169687490-f600b635-6170-4913-a185-2a1dfb9827f9.png)
+
 
 
 ### 6. 팀 소개
