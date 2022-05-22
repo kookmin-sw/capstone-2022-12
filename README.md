@@ -32,7 +32,7 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
   + 추가 예정
 
 ### 5. 시스템 구성
-&nbsp&nbsp&nbsp![image](https://user-images.githubusercontent.com/28241676/169680918-4fc0a1f3-3fcf-4559-b412-14151116b91a.png)<br>
+&nbsp&nbsp&nbsp&nbsp&nbsp![image](https://user-images.githubusercontent.com/28241676/169680918-4fc0a1f3-3fcf-4559-b412-14151116b91a.png)<br>
 사용자의 음성을 스피커를 통해 입력받습니다. 음성은 텍스트로 변환되어 AI서버에 전송됩니다. AI 서버에서는 텍스트의 감정을 분석하고 이에 맞는 응답을 return 합니다. return 받은 응답은 스피커에서 음성합성을 통해 출력됩니다.<br>
 AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 50% 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
 
