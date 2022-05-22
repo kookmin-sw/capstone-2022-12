@@ -32,11 +32,21 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 사용자의 음성을 스피커를 통해 입력받습니다. 음성은 텍스트로 변환되어 AI서버에 전송됩니다. AI 서버에서는 텍스트의 감정을 분석하고 이에 맞는 응답을 return 합니다. return 받은 응답은 스피커에서 음성합성을 통해 출력됩니다.<br>
 AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 특정 Threshold 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
 
-#### 모델 Inference
-##### 감정분류 모델(Fusion)
-![감정분류 모델 Inference](https://user-images.githubusercontent.com/28581473/169650042-13de308f-d240-4fb1-a186-5c1bcbf12d7f.gif)
-##### 문장생성 모델(SBERT)
-![문장생성 모델 inference](https://user-images.githubusercontent.com/28581473/169650083-cc2d33bd-5bb1-4788-811c-7c203328832a.gif)
+#### 모델
+##### 감정분류 모델(BERT+ResNet)
++ Model Architecture 
+  + ![감정분류 모델 Architecture](https://user-images.githubusercontent.com/28241676/169647189-833a96ca-8522-4c4e-b815-00edd807dd37.png)
++ Model Inference
+  + ![감정분류모델 Inference](https://user-images.githubusercontent.com/28241676/169647405-29ad49fa-6b6f-4ba5-8b3f-6f7a129fb1dc.gif)
++ Performance Table
+  + ![감정분류 모델 성능 테이블](https://user-images.githubusercontent.com/28241676/169647343-ec61f68e-ce83-4d4c-87db-858aecce2046.png)
+##### 문장출력 모델(S-BERT Based ChatBot)
++ Model Architecture
+  + ![문장출력 모델 Architecture](https://user-images.githubusercontent.com/28241676/169647285-933bb81b-fcdc-43cb-8187-8eb2b547ca8e.png)
++ Model Inference
+  + ![문장출력 모델 Inference](https://user-images.githubusercontent.com/28241676/169647391-b9c80489-f164-4829-a2c7-8627c77175d4.gif)
++ Performance Table
+  + ![문장출력 모델 성능 테이블](https://user-images.githubusercontent.com/28241676/169647356-942a6527-2b10-42cc-adee-2871c285e057.png)
 
 #### 로그인 페이지
 ![로그인](https://user-images.githubusercontent.com/28581473/169650216-d177308a-d0ca-49bb-8dca-75db76d47037.png)
