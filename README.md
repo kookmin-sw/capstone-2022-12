@@ -1,3 +1,5 @@
+![팀12-포스터](https://user-images.githubusercontent.com/28241676/169971475-31deaeb7-4139-437b-9871-8f67675db19b.jpg)
+
 ### 1. 프로젝트 소개
 
 #### 프로젝트 이름: `AID`<br>
@@ -25,9 +27,9 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 + 중간 발표자료
   + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.pdf)
 + 결과 보고서
-  + 추가 예정
+  + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%88%98%ED%96%89%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)
 + 최종 발표자료
-  + 추가 예정
+  + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%B5%9C%EC%A2%85%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.pdf)
 + 최종 보고서
   + 추가 예정
 
