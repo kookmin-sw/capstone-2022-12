@@ -1,3 +1,5 @@
+![팀12-포스터](https://user-images.githubusercontent.com/28241676/169971475-31deaeb7-4139-437b-9871-8f67675db19b.jpg)
+
 ### 1. 프로젝트 소개
 
 #### 프로젝트 이름: `AID`<br>
@@ -17,7 +19,7 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 [![AID 소개영상](https://user-images.githubusercontent.com/28241676/169681318-e2c577c7-c4c1-4c59-acd0-f54c2c219bdc.png)](https://youtu.be/Tgn2YCNgPzI)
 
 ### 3. 시연영상
-[![AID 시연영상](https://user-images.githubusercontent.com/28241676/169681332-17731554-500f-496a-b6a4-01fad979c54e.png)](https://www.youtube.com/watch?v=CSO4FrF0IsA)
+[![AID 시연영상](https://user-images.githubusercontent.com/28241676/169681332-17731554-500f-496a-b6a4-01fad979c54e.png)](https://youtu.be/CSO4FrF0IsA)
 
 ### 4. 문서
 + 중간 보고서
@@ -25,16 +27,16 @@ Therefore, **We introduce services that monitor the emotional state of single-pe
 + 중간 발표자료
   + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%A4%91%EA%B0%84%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.pdf)
 + 결과 보고서
-  + 추가 예정
+  + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%88%98%ED%96%89%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C.pdf)
 + 최종 발표자료
-  + 추가 예정
+  + [LINK](https://github.com/kookmin-sw/capstone-2022-12/blob/master/docs/%ED%8C%8012-%EC%B5%9C%EC%A2%85%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.pdf)
 + 최종 보고서
   + 추가 예정
 
 ### 5. 시스템 구성
 ![image](https://user-images.githubusercontent.com/28241676/169680918-4fc0a1f3-3fcf-4559-b412-14151116b91a.png)<br>
 사용자의 음성을 스피커를 통해 입력받습니다. 음성은 텍스트로 변환되어 AI서버에 전송됩니다. AI 서버에서는 텍스트의 감정을 분석하고 이에 맞는 응답을 return 합니다. return 받은 응답은 스피커에서 음성합성을 통해 출력됩니다.<br>
-AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 특정 Threshold 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
+AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버의 DB에 저장됩니다. 2주간의 대화 목록에서 우울의 감정 비율이 50% 이상 감지되면 회원 가입시 등록된 보호자 혹은 기관 관계자에게 알림을 주어 적절한 치료를 받을 수 있도록 설계했습니다.
 
 #### 모델
 ##### 감정분류 모델(BERT+ResNet)
@@ -53,13 +55,16 @@ AI서버에 텍스트를 받은 후 감정 분석까지 완료되면 Web 서버�
   + ![문장출력 모델 성능 테이블](https://user-images.githubusercontent.com/28241676/169647356-942a6527-2b10-42cc-adee-2871c285e057.png)
 
 #### 로그인 페이지
-![로그인](https://user-images.githubusercontent.com/28581473/169650216-d177308a-d0ca-49bb-8dca-75db76d47037.png)
+![로그인](https://user-images.githubusercontent.com/28241676/169687469-2dac97bf-cce0-4c90-a454-e03f4a671f7b.png)
+
 
 #### 통계 페이지
-![통계](https://user-images.githubusercontent.com/28581473/169650232-a36efe93-dee7-48c3-ac0f-c3da6775f959.png)
+![통계](https://user-images.githubusercontent.com/28241676/169687481-1ff782fe-7615-4fd3-8c25-a76bc404e2b0.png)
+
 
 #### 알림 메일 예시
-![메일](https://user-images.githubusercontent.com/28581473/169650268-2df7fdd5-5158-4b07-b19f-02d2e0c85287.png)
+![메일](https://user-images.githubusercontent.com/28241676/169687490-f600b635-6170-4913-a185-2a1dfb9827f9.png)
+
 
 
 ### 6. 팀 소개
