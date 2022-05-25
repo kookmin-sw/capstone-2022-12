@@ -1,0 +1,8 @@
+{
+  "short_name": "AID Web",
+  "name": "AID Web Server",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
